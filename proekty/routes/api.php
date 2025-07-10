@@ -1,19 +1,16 @@
 <?php
 
+use App\Models\Product;
+use App\Imports\ProductsImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Maatwebsite\Excel\Facades\Excel;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+Route::get('/products', fn () => Product::all());
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/upload', function (Request $request) {
+    $request->validate(['file' => 'required|mimes:xlsx,xls']);
+
+    Excel::import(new ProductsImport, $request->file('file'));
+    return response()->json(['message' => 'Импорт завершён']);
 });
