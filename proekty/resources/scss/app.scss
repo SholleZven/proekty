@@ -100,3 +100,20 @@ h1 {
         align-items: center;
     }
 }
+
+button {
+    background: #6c63ff;
+    color: #fff;
+    border: none;
+    padding: 0.65rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &:hover {
+        background: #574fdb;
+    }
+}
+
