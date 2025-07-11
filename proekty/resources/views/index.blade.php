@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Excel Table</title>
-    @vite(['resources/js/app.js', 'resources/scss/app.scss'])
+    <title>Проекты</title>
+    @vite(['resources/scss/app.scss', 'resources/js/app.js'])
 </head>
 <body>
     <div id="app"></div>

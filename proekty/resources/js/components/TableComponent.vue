@@ -1,81 +1,92 @@
 <template>
   <div class="container">
-    <h1>Загрузка Excel и отображение данных</h1>
+    <h1>Проекты</h1>
 
     <form @submit.prevent="uploadFile" class="upload">
-      <input type="file" @change="handleFile" />
-      <button type="submit">Загрузить</button>
+      <input type="file" @change="handleFileUpload" />
+      <button type="submit">Загрузить Excel</button>
     </form>
 
-    <table v-if="products.length" class="table">
+    <table class="table" v-if="products.length">
       <thead>
-        <tr><th>ID</th><th>Название</th><th>Цена</th></tr>
+        <tr>
+          <th>Название</th>
+          <th>Рейтинг</th>
+        </tr>
       </thead>
       <tbody>
         <tr v-for="product in products" :key="product.id">
-          <td>{{ product.id }}</td>
           <td>{{ product.name }}</td>
-          <td>{{ product.price }}</td>
+          <td>{{ product.positive_conclusion }}</td>
         </tr>
       </tbody>
     </table>
+
+    <!-- Пагинация -->
+    <div v-if="pagination.last > 1" class="pagination">
+      <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Назад</button>
+      <span>Страница {{ currentPage }} из {{ pagination.last }}</span>
+      <button @click="changePage(currentPage + 1)" :disabled="currentPage === pagination.last">Вперёд</button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-const products = ref([]);
-const file = ref(null);
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
-const fetchProducts = async () => {
-  const res = await fetch('/api/products');
-  products.value = await res.json();
-};
+const products = ref([])
+const file = ref(null)
 
-const handleFile = (e) => {
-  file.value = e.target.files[0];
-};
+const pagination = ref({
+  current: 1,
+  last: 1,
+})
+const currentPage = ref(1)
+
+const fetchProducts = async (page = 1) => {
+  const response = await axios.get(`/api/products?page=${page}`)
+  products.value = response.data.data
+  pagination.value = {
+    current: response.data.current_page,
+    last: response.data.last_page,
+  }
+}
+
+const handleFileUpload = (e) => {
+  file.value = e.target.files[0]
+}
 
 const uploadFile = async () => {
-  if (!file.value) return;
+  if (!file.value) return
 
-  const formData = new FormData();
-  formData.append('file', file.value);
+  const formData = new FormData()
+  formData.append('file', file.value)
 
-  await fetch('/api/upload', {
-    method: 'POST',
-    body: formData,
-  });
+  await axios.post('/api/products/upload', formData)
+  await fetchProducts(currentPage.value)
+}
 
-  await fetchProducts();
-};
+const changePage = (page) => {
+  if (page >= 1 && page <= pagination.value.last) {
+    currentPage.value = page
+    fetchProducts(page)
+  }
+}
 
-onMounted(fetchProducts);
+onMounted(() => fetchProducts())
 </script>
 
-<style scoped lang="scss">
-.container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 1rem;
-}
-
-.upload {
+<style scoped>
+.pagination {
+  margin-top: 1rem;
   display: flex;
   gap: 1rem;
-  margin-bottom: 1rem;
-
-  input[type="file"] {
-    flex: 1;
-  }
+  align-items: center;
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  th, td {
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-  }
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>
