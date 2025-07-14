@@ -6,8 +6,6 @@ use App\Models\Product;
 use App\Services\ProductImportService;
 use App\Services\UniqueProductFilterService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\Response;
 

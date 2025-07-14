@@ -22,10 +22,12 @@ class ProductImportService implements ToCollection
         foreach ($filteredRows as $row) {
             $name = trim((string) $row[0]);
             $positiveConclusion = $row[1];
+            $projectNumber = $row[2];
 
             Product::create([
                 'name' => $name,
                 'positive_conclusion' => is_numeric($positiveConclusion) ? (int) $positiveConclusion : null,
+                'project_number' => $projectNumber
             ]);
         }
     }

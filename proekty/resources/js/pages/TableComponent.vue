@@ -21,12 +21,14 @@
                 <tr>
                     <th>Название</th>
                     <th>Рейтинг</th>
+                    <th>Номер проекта</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="product in products" :key="product.id">
                     <td>{{ product.name }}</td>
                     <td>{{ product.positive_conclusion }}</td>
+                    <td>{{ product.project_number }}</td>
                 </tr>
             </tbody>
         </table>
@@ -52,7 +54,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import LoadingDots from './LoadingDots.vue'
+import LoadingDots from '../components/LoadingDots.vue'
 
 const products = ref([])
 const file = ref(null)
