@@ -23,10 +23,9 @@ class ProductController extends Controller
         $page = (int) $request->input('page', 1);
         $perPage = 10;
 
-        // Формируем уникальный ключ кэша по параметрам поиска и страницы
+        // Уникальный ключ по параметрам поиска и страницы
         $cacheKey = "products_search:" . md5($search) . "_page:" . $page;
 
-        // Кэшируем результат запроса на 30 минут
         $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($search, $page, $perPage) {
             $query = Product::query();
 
@@ -34,18 +33,22 @@ class ProductController extends Controller
                 $query->where('name', 'ILIKE', '%' . $search . '%');
             }
 
-            return $query->orderBy('name')->paginate($perPage, ['*'], 'page', $page);
+            // Важно: передаем 'page' вручную
+            return $query->paginate($perPage, ['*'], 'page', $page);
         });
 
         return response()->json($cached);
     }
 
-    public function fetchByName($name)
+    public function fetchByName($name, Request $request)
     {
-        $cacheKey = "products_by_name:" . md5($name);
+        $page = (int) $request->input('page', 1);
+        $perPage = 10;
 
-        $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($name) {
-            return Product::where('name', $name)->paginate(10);
+        $cacheKey = "products_by_name:" . md5($name) . "_page:" . $page;
+
+        $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($name, $page, $perPage) {
+            return Product::where('name', $name)->paginate($perPage, ['*'], 'page', $page);
         });
 
         return response()->json($cached);
@@ -69,7 +72,7 @@ class ProductController extends Controller
 
         Excel::import($importService, $file);
 
-        // Очищаем весь кэш с тегом 'products', чтобы данные обновились
+        // Сбросить весь кэш с тегом 'products'
         Cache::tags(['products'])->flush();
 
         return response()->json([
