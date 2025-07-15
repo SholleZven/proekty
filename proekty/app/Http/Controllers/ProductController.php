@@ -21,30 +21,35 @@ class ProductController extends Controller
         return response()->json(Product::paginate(10));
     }
 
+    public function fetchByName($name)
+    {
+        return  response()->json(Product::where('name', $name)->get());
+    }
+
     public function upload(Request $request)
     {
-            // Валидация входного файла
-            $request->validate([
-                'file' => 'required|file|mimes:xlsx,xls',
-            ]);
+        // Валидация входного файла
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls',
+        ]);
 
-            // Проверка на наличие файла и его корректность
-            $file = $request->file('file');
+        // Проверка на наличие файла и его корректность
+        $file = $request->file('file');
 
-            if (!$file || !$file->isValid()) {
-                return response()->json([
-                    'message' => 'Некорректный файл'
-                ], Response::HTTP_BAD_REQUEST);
-            }
-
-            // Создаём сервисы фильтрации и импорта
-            $importService = new ProductImportService(new UniqueProductFilterService());
-
-            // Импортируем файл
-            Excel::import($importService, $file);
-
+        if (!$file || !$file->isValid()) {
             return response()->json([
-                'message' => 'Импорт завершён'
-            ], Response::HTTP_OK);
+                'message' => 'Некорректный файл'
+            ], Response::HTTP_BAD_REQUEST);
         }
+
+        // Создаём сервисы фильтрации и импорта
+        $importService = new ProductImportService(new UniqueProductFilterService());
+
+        // Импортируем файл
+        Excel::import($importService, $file);
+
+        return response()->json([
+            'message' => 'Импорт завершён'
+        ], Response::HTTP_OK);
+    }
 }
