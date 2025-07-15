@@ -40,8 +40,12 @@
         </table>
 
         <!-- Пагинация -->
-        <Pagination v-if="pagination.last > 1" :current="currentPage" :last="pagination.last"
-            :loading="loadingPagination" @change="changePage" />
+        <Pagination
+            v-if="pagination.last > 1"
+            :current="currentPage"
+            :last="pagination.last"
+            :loading="loadingPagination"
+            @change="changePage" />
     </div>
 </template>
 

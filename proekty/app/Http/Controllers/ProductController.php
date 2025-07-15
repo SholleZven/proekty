@@ -23,7 +23,7 @@ class ProductController extends Controller
 
     public function fetchByName($name)
     {
-        return  response()->json(Product::where('name', $name)->get());
+        return  response()->json(Product::where('name', $name)->paginate(10));
     }
 
     public function upload(Request $request)
