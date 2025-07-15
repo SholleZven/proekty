@@ -19,9 +19,7 @@
                 <tbody>
                     <tr v-for="product in data" :key="product.id">
                         <td>
-                            <router-link :to="`/products/name/${product.name}`">
-                                {{ product.name }}
-                            </router-link>
+                            {{ product.name }}
                         </td>
                         <td>{{ product.positive_conclusion }}</td>
                         <td>{{ product.project_number }}</td>

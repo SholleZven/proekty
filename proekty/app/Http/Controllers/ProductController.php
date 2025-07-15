@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Services\ProductImportService;
 use App\Services\UniqueProductFilterService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,46 +19,61 @@ class ProductController extends Controller
 
     public function fetch(Request $request)
     {
-        $query = Product::query();
+        $search = trim($request->input('search', ''));
+        $page = (int) $request->input('page', 1);
+        $perPage = 10;
 
-        // Если параметр 'search' присутствует и не пустой — фильтруем
-        $search = trim($request->input('search'));
-        if (!empty($search)) {
-            $query->where('name', 'ILIKE', '%' . $search . '%');
-        }
+        // Формируем уникальный ключ кэша по параметрам поиска и страницы
+        $cacheKey = "products_search:" . md5($search) . "_page:" . $page;
 
-        return response()->json($query->paginate(10));
+        // Кэшируем результат запроса на 30 минут
+        $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($search, $page, $perPage) {
+            $query = Product::query();
+
+            if (!empty($search)) {
+                $query->where('name', 'ILIKE', '%' . $search . '%');
+            }
+
+            return $query->orderBy('name')->paginate($perPage, ['*'], 'page', $page);
+        });
+
+        return response()->json($cached);
     }
 
     public function fetchByName($name)
     {
-        return  response()->json(Product::where('name', $name)->paginate(10));
+        $cacheKey = "products_by_name:" . md5($name);
+
+        $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($name) {
+            return Product::where('name', $name)->paginate(10);
+        });
+
+        return response()->json($cached);
     }
 
     public function upload(Request $request)
     {
-        // Валидация входного файла
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls',
         ]);
 
-        // Проверка на наличие файла и его корректность
         $file = $request->file('file');
 
         if (!$file || !$file->isValid()) {
             return response()->json([
-                'message' => 'Некорректный файл'
+                'message' => 'Некорректный файл',
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        // Создаём сервисы фильтрации и импорта
         $importService = new ProductImportService(new UniqueProductFilterService());
 
-        // Импортируем файл
         Excel::import($importService, $file);
 
+        // Очищаем весь кэш с тегом 'products', чтобы данные обновились
+        Cache::tags(['products'])->flush();
+
         return response()->json([
-            'message' => 'Импорт завершён'
+            'message' => 'Импорт завершён',
         ], Response::HTTP_OK);
     }
 }
