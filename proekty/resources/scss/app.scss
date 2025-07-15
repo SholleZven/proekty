@@ -1,58 +1,151 @@
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: #f0f2f5;
-  margin: 0;
-  padding: 0;
-  color: #333;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 0;
+    color: #333;
 }
 
 .container {
-  max-width: 900px;
-  margin: 3rem auto;
-  background: #fff;
-  padding: 2rem 3rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgb(0 0 0 / 0.1);
+    max-width: 900px;
+    margin: 3rem auto;
+    background: #fff;
+    padding: 2rem 3rem; /* Обрати внимание, padding по горизонтали 3rem */
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgb(0 0 0 / 0.1);
+    box-sizing: border-box; /* <-- Добавь, чтобы padding учитывался корректно */
 }
 
 h1 {
-  font-weight: 700;
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
-  color: #222;
-  text-align: center;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #222;
+    text-align: center;
 }
 
 .upload {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
 
-  input[type="file"] {
-    flex-grow: 1;
-    padding: 0.6rem 1rem;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
+    input[type="file"] {
+        flex-grow: 1;
+        padding: 0.6rem 1rem;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
 
-    &:focus {
-      outline: none;
-      border-color: #6c63ff;
-      box-shadow: 0 0 6px #6c63ff66;
+        &:focus {
+            outline: none;
+            border-color: #6c63ff;
+            box-shadow: 0 0 6px #6c63ff66;
+        }
     }
-  }
 
-  .upload-buttons {
+    .upload-buttons {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
     }
 
-  button {
+    button {
+        background: #6c63ff;
+        color: #fff;
+        border: none;
+        padding: 0.65rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+
+        &:hover {
+            background: #574fdb;
+        }
+    }
+}
+
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+    overflow-x: auto;
+
+    thead tr {
+        background: #6c63ff;
+        color: white;
+        border-radius: 12px;
+    }
+
+    th,
+    td {
+        padding: 1rem 1.2rem;
+        text-align: left;
+    }
+
+    tbody tr {
+        background: #fafafa;
+        box-shadow: 0 3px 5px rgb(0 0 0 / 0.05);
+        border-radius: 12px;
+
+        td {
+            border: none;
+        }
+    }
+
+    tbody tr:hover {
+        background: #e3e0ff;
+    }
+
+    .pagination {
+        margin-top: 1rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        button {
+            font-size: 1rem;
+            padding: 0.75rem 1.2rem;
+        }
+    }
+}
+
+.input-wrapper {
+    margin-bottom: 1rem;
+    width: 100%;
+
+    input[type="text"] {
+        padding: 0.6rem 1rem;
+        width: 100%;
+        box-sizing: border-box;
+        max-width: 100%;
+        display: block;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit;
+        color: #333;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+        &::placeholder {
+            color: #999;
+        }
+
+        &:focus {
+            outline: none;
+            border-color: #6c63ff;
+            box-shadow: 0 0 8px #6c63ff66;
+        }
+    }
+}
+
+button {
     background: #6c63ff;
     color: #fff;
     border: none;
@@ -64,140 +157,87 @@ h1 {
     transition: background 0.3s ease;
 
     &:hover {
-      background: #574fdb;
+        background: #574fdb;
     }
-  }
-}
-
-.table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 12px;
-  overflow-x: auto;
-
-  thead tr {
-    background: #6c63ff;
-    color: white;
-    border-radius: 12px;
-  }
-
-  th,
-  td {
-    padding: 1rem 1.2rem;
-    text-align: left;
-  }
-
-  tbody tr {
-    background: #fafafa;
-    box-shadow: 0 3px 5px rgb(0 0 0 / 0.05);
-    border-radius: 12px;
-
-    td {
-      border: none;
-    }
-  }
-
-  tbody tr:hover {
-    background: #e3e0ff;
-  }
-
-  .pagination {
-    margin-top: 1rem;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-
-    button {
-      font-size: 1rem;
-      padding: 0.75rem 1.2rem;
-    }
-  }
-}
-
-button {
-  background: #6c63ff;
-  color: #fff;
-  border: none;
-  padding: 0.65rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
-
-  &:hover {
-    background: #574fdb;
-  }
 }
 
 /* --- Responsive Design --- */
 @media (max-width: 768px) {
-  .container {
-    padding: 1rem 1.5rem;
-    margin: 1rem;
-  }
-
-  h1 {
-    font-size: 1.8rem;
-  }
-
-  .upload {
-    flex-direction: column;
-    gap: 0.8rem;
-
-    input[type="file"],
-    button {
-      width: 100%;
-      font-size: 1rem;
+    .container {
+        padding: 1rem 1.5rem;
+        margin: 1rem;
     }
-  }
 
-  .table {
-    font-size: 0.95rem;
-
-    th,
-    td {
-      padding: 0.8rem;
+    .input-wrapper input[type="text"] {
+        font-size: 0.95rem;
+        padding: 0.5rem 0.8rem;
     }
-  }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .upload {
+        flex-direction: column;
+        gap: 0.8rem;
+
+        input[type="file"],
+        button {
+            width: 100%;
+            font-size: 1rem;
+        }
+    }
+
+    .table {
+        font-size: 0.95rem;
+
+        th,
+        td {
+            padding: 0.8rem;
+        }
+    }
 }
 
 @media (max-width: 480px) {
-  .container {
-    width: 100%;
-    padding: 1rem;
-    margin: 0;
-    border-radius: 0;
-    box-shadow: none;
-    height: 100vh;
-    overflow-y: auto;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  .upload input[type="file"],
-  .upload button {
-    font-size: 1rem;
-    padding: 1rem;
-    width: 100%;
-  }
-
-  .table {
-    font-size: 0.9rem;
-    overflow-x: auto;
-
-    th,
-    td {
-      padding: 0.7rem;
+    .container {
+        width: 100%;
+        padding: 1rem;
+        margin: 0;
+        border-radius: 0;
+        box-shadow: none;
+        height: 100vh;
+        overflow-y: auto;
     }
 
-    .pagination button {
-      width: 100%;
-      font-size: 1rem;
-      padding: 1rem;
+    .input-wrapper input[type="text"] {
+        font-size: 0.9rem;
+        padding: 0.6rem 0.8rem;
     }
-  }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .upload input[type="file"],
+    .upload button {
+        font-size: 1rem;
+        padding: 1rem;
+        width: 100%;
+    }
+
+    .table {
+        font-size: 0.9rem;
+        overflow-x: auto;
+
+        th,
+        td {
+            padding: 0.7rem;
+        }
+
+        .pagination button {
+            width: 100%;
+            font-size: 1rem;
+            padding: 1rem;
+        }
+    }
 }

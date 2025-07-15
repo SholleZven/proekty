@@ -16,9 +16,17 @@ class ProductController extends Controller
         return view('index');
     }
 
-    public function fetch()
+    public function fetch(Request $request)
     {
-        return response()->json(Product::paginate(10));
+        $query = Product::query();
+
+        // Если параметр 'search' присутствует и не пустой — фильтруем
+        $search = trim($request->input('search'));
+        if (!empty($search)) {
+            $query->where('name', 'ILIKE', '%' . $search . '%');
+        }
+
+        return response()->json($query->paginate(10));
     }
 
     public function fetchByName($name)

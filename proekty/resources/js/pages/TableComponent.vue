@@ -17,13 +17,18 @@
       </button>
     </form>
 
-    <!-- Пагинация Таблица -->
-    <Pagination url="/api/products" v-slot="{ data, loading }">
+    <!-- Поиск -->
+    <SearchInput @search="handleSearch" />
+
+    <!-- Пагинация + Таблица -->
+    <Pagination
+      :key="reloadKey"
+      :url="searchTerm ? `/api/products?search=${encodeURIComponent(searchTerm)}` : '/api/products'"
+      v-slot="{ data, loading }"
+    >
       <div v-if="loading" class="loading-wrapper">
         <LoadingDots class="large-loading" />
       </div>
-
-      <!-- Таблица -->
 
       <table v-else-if="data.length" class="table">
         <thead>
@@ -57,10 +62,19 @@ import axios from 'axios'
 
 import LoadingDots from '../components/LoadingDots.vue'
 import Pagination from '../components/Pagination.vue'
+import SearchInput from '../components/SearchInput.vue'
 
 const file = ref(null)
 const fileName = ref('')
 const loadingUpload = ref(false)
+const searchTerm = ref('')
+
+// Ключ для форсирования обновления Pagination
+const reloadKey = ref(0)
+
+const handleSearch = (term) => {
+  searchTerm.value = term
+}
 
 const handleFileUpload = (e) => {
   const selected = e.target.files[0]
@@ -79,6 +93,10 @@ const uploadFile = async () => {
 
   try {
     await axios.post('/api/products/upload', formData)
+    // Форсируем обновление Pagination, увеличивая ключ
+    reloadKey.value++
+  } catch (error) {
+    console.error('Ошибка загрузки файла', error)
   } finally {
     loadingUpload.value = false
   }

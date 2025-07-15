@@ -1,29 +1,19 @@
 <template>
-  <div>
-    <!-- Слот с результатами -->
-    <slot :data="items" :loading="loading" />
+    <slot :data="data" :loading="loading" />
 
-    <!-- Панель пагинации -->
-    <div v-if="lastPage > 1" class="pagination">
-      <button
-        @click="changePage(currentPage - 1)"
-        :disabled="currentPage === 1 || loading"
-      >
-        <LoadingDots v-if="loading && currentPage !== 1" />
-        <span v-else>Назад</span>
-      </button>
+    <div class="pagination" v-if="last > 1">
+        <button @click="current--" :disabled="current === 1 || loading">
+            <LoadingDots v-if="loading && current !== last" />
+            <span v-else>Назад</span>
+        </button>
 
-      <span>Страница {{ currentPage }} из {{ lastPage }}</span>
+        <span>Страница {{ current }} из {{ last }}</span>
 
-      <button
-        @click="changePage(currentPage + 1)"
-        :disabled="currentPage === lastPage || loading"
-      >
-        <LoadingDots v-if="loading && currentPage !== lastPage" />
-        <span v-else>Вперёд</span>
-      </button>
+        <button @click="current++" :disabled="current === last || loading">
+            <LoadingDots v-if="loading && current !== 1" />
+            <span v-else>Вперёд</span>
+        </button>
     </div>
-  </div>
 </template>
 
 <script setup>
@@ -32,70 +22,62 @@ import axios from 'axios'
 import LoadingDots from './LoadingDots.vue'
 
 const props = defineProps({
-  url: {
-    type: String,
-    required: true,
-  },
-  watchParams: {
-    type: Array,
-    default: () => [],
-  },
+    url: {
+        type: String,
+        required: true,
+    },
 })
 
-const emit = defineEmits(['loaded'])
-
-const items = ref([])
-const currentPage = ref(1)
-const lastPage = ref(1)
+const current = ref(1)
+const last = ref(1)
+const data = ref([])
 const loading = ref(false)
 
-const fetchPage = async (page = 1) => {
-  loading.value = true
-  try {
-    const response = await axios.get(`${props.url}?page=${page}`)
-    items.value = response.data.data
-    currentPage.value = response.data.current_page
-    lastPage.value = response.data.last_page
-    emit('loaded', items.value)
-  } catch (e) {
-    items.value = []
-  } finally {
-    loading.value = false
-  }
+const fetchData = async () => {
+    loading.value = true
+    try {
+        const urlWithPage = props.url.includes('?')
+            ? `${props.url}&page=${current.value}`
+            : `${props.url}?page=${current.value}`
+
+        const response = await axios.get(urlWithPage)
+
+        data.value = response.data.data
+        current.value = response.data.current_page
+        last.value = response.data.last_page
+    } catch (error) {
+        console.error('Ошибка при загрузке данных:', error)
+        data.value = []
+        current.value = 1
+        last.value = 1
+    } finally {
+        loading.value = false
+    }
 }
 
-const changePage = (page) => {
-  if (page >= 1 && page <= lastPage.value) {
-    fetchPage(page)
-  }
-}
+watch(() => props.url, () => {
+    current.value = 1
+    fetchData()
+})
 
-// Обновление при изменении параметров
-watch(
-  () => props.watchParams,
-  () => {
-    currentPage.value = 1
-    fetchPage(1)
-  },
-  { deep: true }
-)
+watch(current, fetchData)
 
-onMounted(() => fetchPage(1))
+onMounted(fetchData)
 </script>
 
 <style scoped>
 .pagination {
-  margin-top: 1.5rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
 button {
-  background: #4f46e5;
-  color: white;
+    background: #4f46e5;
+    color: white;
   border: none;
   padding: 0.6rem 1.4rem;
   border-radius: 8px;
@@ -104,7 +86,12 @@ button {
   transition: background-color 0.3s ease;
 }
 
-button:hover {
+button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+button:hover:enabled {
   background-color: #4338ca;
 }
 </style>
