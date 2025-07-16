@@ -9,29 +9,29 @@ class UniqueProductFilterService
 {
     /**
      * Фильтрует уникальные продукты:
-     * - Удаляет дубли внутри Excel-файла (по project_number)
-     * - Удаляет уже существующие в БД продукты (по project_number)
+     * - Удаляет дубли внутри Excel-файла (по egrz_number)
+     * - Удаляет уже существующие в БД продукты (по egrz_number)
      */
     public function filter(Collection $rows): Collection
     {
-        // Пропустить заголовок и привести project_number к строке
-        $projectNumbersFromExcel = $rows
+        // Пропустить заголовок и привести egrz_number к строке
+        $egrzNumbersFromExcel = $rows
             ->skip(1)
             ->map(fn($row) => trim((string) $row[2]))
             ->filter()
             ->unique()
             ->values();
 
-        // Получить уже существующие project_number из базы
-        $existingNames = Product::whereIn('project_number', $projectNumbersFromExcel)->pluck('project_number')->toArray();
+        // Получить уже существующие egrz_number из базы
+        $existingNames = Product::whereIn('egrz_number', $egrzNumbersFromExcel)->pluck('egrz_number')->toArray();
         $existingNamesSet = array_flip($existingNames);
 
-        // Оставить только уникальные по project_number, которых нет в базе
+        // Оставить только уникальные по egrz_number, которых нет в базе
         return $rows
             ->skip(1)
             ->filter(function ($row) use ($existingNamesSet) {
-                $projectNumber = trim((string) $row[2]);
-                return $projectNumber !== '' && !isset($existingNamesSet[$projectNumber]);
+                $egrzNumber = trim((string) $row[2]);
+                return $egrzNumber !== '' && !isset($existingNamesSet[$egrzNumber]);
             })
             ->unique(fn($row) => trim((string) $row[2])) // убрать дубли внутри Excel
             ->values();

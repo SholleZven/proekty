@@ -12,7 +12,7 @@
                 <thead>
                     <tr>
                         <th>Название</th>
-                        <th>Рейтинг</th>
+                        <!-- <th>Рейтинг</th> -->
                         <th>Номер проекта</th>
                     </tr>
                 </thead>
@@ -21,7 +21,7 @@
                         <td>
                             {{ product.name }}
                         </td>
-                        <td>{{ product.positive_conclusion }}</td>
+                        <!-- <td>{{ product.positive_conclusion }}</td> -->
                         <td>{{ product.project_number }}</td>
                     </tr>
                 </tbody>

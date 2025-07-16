@@ -34,7 +34,7 @@
         <thead>
           <tr>
             <th>Название</th>
-            <th>Рейтинг</th>
+            <!-- <th>Рейтинг</th> -->
             <th>Номер проекта</th>
           </tr>
         </thead>
@@ -45,7 +45,7 @@
                 {{ product.name }}
               </RouterLink>
             </td>
-            <td>{{ product.positive_conclusion }}</td>
+            <!-- <td>{{ product.positive_conclusion }}</td> -->
             <td>{{ product.project_number }}</td>
           </tr>
         </tbody>
