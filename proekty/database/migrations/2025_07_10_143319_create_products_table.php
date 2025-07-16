@@ -17,7 +17,7 @@ return new class extends Migration
             // $table->string('rating');
             // $table->decimal('rating', 2, 1);
             $table->integer('positive_conclusion');
-            $table->string('project_number');
+            $table->string('project_number')->unique()->nullable(false);
             $table->timestamps();
         });
     }

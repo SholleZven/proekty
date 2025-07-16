@@ -26,6 +26,10 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    watchParams: {
+        type: Array,
+        default: () => [],
+    }
 })
 
 const current = ref(1)
@@ -78,20 +82,20 @@ onMounted(fetchData)
 button {
     background: #4f46e5;
     color: white;
-  border: none;
-  padding: 0.6rem 1.4rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+    border: none;
+    padding: 0.6rem 1.4rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 button:disabled {
-  background-color: #9ca3af;
-  cursor: not-allowed;
+    background-color: #9ca3af;
+    cursor: not-allowed;
 }
 
 button:hover:enabled {
-  background-color: #4338ca;
+    background-color: #4338ca;
 }
 </style>

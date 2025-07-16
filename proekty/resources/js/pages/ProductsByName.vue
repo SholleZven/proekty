@@ -44,6 +44,7 @@ import Pagination from '../components/Pagination.vue'
 
 const route = useRoute()
 const name = ref(route.params.name)
+const loading = ref(false)
 
 // обновляем name при переходе по роуту
 watch(() => route.params.name, (newVal) => {

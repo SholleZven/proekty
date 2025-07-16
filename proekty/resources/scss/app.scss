@@ -7,13 +7,13 @@ body {
 }
 
 .container {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 3rem auto;
     background: #fff;
-    padding: 2rem 3rem; /* Обрати внимание, padding по горизонтали 3rem */
+    padding: 2rem 3rem;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgb(0 0 0 / 0.1);
-    box-sizing: border-box; /* <-- Добавь, чтобы padding учитывался корректно */
+    box-sizing: border-box;
 }
 
 h1 {
