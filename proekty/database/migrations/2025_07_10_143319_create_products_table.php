@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('service_type')->nullable(true);
             $table->date('start_date')->nullable(true);
             $table->string('name', 500)->nullable(true);
-            $table->string('inn')->nullable(false);
+            $table->string('inn')->nullable(true);
             $table->date('contract_date')->nullable(true);
             $table->date('conclusion_date')->nullable(true);
             $table->string('conclusion_result')->nullable(true);
