@@ -33,7 +33,8 @@
       <table v-else-if="data.length" class="table">
         <thead>
           <tr>
-            <th>Название</th>
+            <th>Наименование генерального проектировщика</th>
+            <th>ИНН</th>
             <!-- <th>Рейтинг</th> -->
             <th>Номер проекта</th>
           </tr>
@@ -45,6 +46,7 @@
                 {{ product.name }}
               </RouterLink>
             </td>
+            <td>{{ product.inn }}</td>
             <!-- <td>{{ product.positive_conclusion }}</td> -->
             <td>{{ product.project_number }}</td>
           </tr>

@@ -33,7 +33,6 @@ class ProductController extends Controller
                 $query->where('name', 'ILIKE', '%' . $search . '%');
             }
 
-            // Важно: передаем 'page' вручную
             return $query->paginate($perPage, ['*'], 'page', $page);
         });
 

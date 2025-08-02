@@ -11,7 +11,7 @@
             <table v-else-if="data.length" class="table">
                 <thead>
                     <tr>
-                        <th>Название</th>
+                        <th>Наименование генерального проектировщика</th>
                         <!-- <th>Рейтинг</th> -->
                         <th>Номер проекта</th>
                     </tr>
