@@ -13,27 +13,32 @@ class UniqueProductFilterService
      * - Удаляет уже существующие в БД продукты (по egrz_number)
      */
     public function filter(Collection $rows): Collection
-    {
-        // Пропустить заголовок и привести egrz_number к строке
-        $egrzNumbersFromExcel = $rows
-            ->skip(1)
-            ->map(fn($row) => trim((string) $row[2]))
-            ->filter()
-            ->unique()
-            ->values();
+{
+    $rows = $rows->skip(1); // Пропускаем заголовок
 
-        // Получить уже существующие egrz_number из базы
-        $existingNames = Product::whereIn('egrz_number', $egrzNumbersFromExcel)->pluck('egrz_number')->toArray();
-        $existingNamesSet = array_flip($existingNames);
+    // Собираем egrz_number и project_number
+    $egrzNumbersFromExcel = $rows->map(fn($row) => trim((string) $row[2]))->filter()->unique()->values();
+    $projectNumbersFromExcel = $rows->map(fn($row) => trim((string) $row[1]))->filter()->unique()->values();
 
-        // Оставить только уникальные по egrz_number, которых нет в базе
-        return $rows
-            ->skip(1)
-            ->filter(function ($row) use ($existingNamesSet) {
-                $egrzNumber = trim((string) $row[2]);
-                return $egrzNumber !== '' && !isset($existingNamesSet[$egrzNumber]);
-            })
-            ->unique(fn($row) => trim((string) $row[2])) // убрать дубли внутри Excel
-            ->values();
-    }
+    $existingEgrz = Product::whereIn('egrz_number', $egrzNumbersFromExcel)->pluck('egrz_number')->toArray();
+    $existingProjects = Product::whereIn('project_number', $projectNumbersFromExcel)->pluck('project_number')->toArray();
+
+    $existingEgrzSet = array_flip($existingEgrz);
+    $existingProjectsSet = array_flip($existingProjects);
+
+    return $rows->filter(function ($row) use ($existingEgrzSet, $existingProjectsSet) {
+        $egrzNumber = trim((string) $row[2]);
+        $projectNumber = trim((string) $row[1]);
+        $inn = trim((string) $row[9]); // колонка ИНН
+
+        return $egrzNumber !== ''
+            && !isset($existingEgrzSet[$egrzNumber])
+            && $projectNumber !== ''
+            && !isset($existingProjectsSet[$projectNumber])
+            && $inn !== ''; // Исключить строки с пустым ИНН
+    })
+    ->unique(fn($row) => trim((string) $row[2]) . '|' . trim((string) $row[1])) // убрать дубли
+    ->values();
+}
+
 }
