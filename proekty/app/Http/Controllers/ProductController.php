@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Services\ProductImportService;
 use App\Services\UniqueProductFilterService;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,20 +21,49 @@ class ProductController extends Controller
     public function fetch(Request $request)
     {
         $search = trim($request->input('search', ''));
-        $page = (int) $request->input('page', 1);
+        $page = max((int) $request->input('page', 1), 1);
         $perPage = 10;
 
-        // Уникальный ключ по параметрам поиска и страницы
-        $cacheKey = "products_search:" . md5($search) . "_page:" . $page;
+        $cacheKey = "products_grouped_inn:" . md5($search) . "_page:" . $page;
 
         $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($search, $page, $perPage) {
-            $query = Product::query();
+            // 1. Получить все уникальные INN с учётом поиска
+            $uniqueInns = Product::query()
+                ->when($search, fn($q) => $q->where('name', 'ILIKE', "%$search%"))
+                ->whereNotNull('inn')
+                ->where('inn', '!=', '')
+                ->select('inn')
+                ->distinct()
+                ->orderBy('inn')
+                ->pluck('inn')
+                ->toArray();
 
-            if (!empty($search)) {
-                $query->where('name', 'ILIKE', '%' . $search . '%');
-            }
+            $total = count($uniqueInns);
 
-            return $query->paginate($perPage, ['*'], 'page', $page);
+            // 2. Разбить на страницы вручную
+            $currentInns = array_slice($uniqueInns, ($page - 1) * $perPage, $perPage);
+
+            // 3. Получить по одному продукту на каждый INN
+            $items = Product::query()
+                ->whereIn('inn', $currentInns)
+                ->whereNotNull('inn')
+                ->where('inn', '!=', '')
+                ->when($search, fn($q) => $q->where('name', 'ILIKE', "%$search%"))
+                ->groupBy('inn')
+                ->selectRaw('MIN(id) as id') // один продукт на inn
+                ->pluck('id');
+
+            $products = Product::whereIn('id', $items)
+                ->orderBy('inn')
+                ->get();
+
+            return new LengthAwarePaginator(
+                $products,
+                $total, // общее число уникальных inn
+                $perPage,
+                $page,
+                ['path' => request()->url(), 'query' => request()->query()]
+            );
         });
 
         return response()->json($cached);
