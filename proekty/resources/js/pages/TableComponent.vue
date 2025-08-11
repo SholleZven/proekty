@@ -28,31 +28,38 @@
                 <LoadingDots class="large-loading" />
             </div>
 
-            <table v-else-if="data.length" class="table">
-                <thead>
-                    <tr>
-                        <th>Наименование генерального проектировщика</th>
-                        <th>ИНН</th>
-                        <th>Всего заключений</th>
-                        <th>Положительных</th>
-                        <th>Отрицательных</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="product in data" :key="product.inn">
-                        <td>
-                            <RouterLink :to="`/products/name/${encodeURIComponent(product.name)}`">
-                                {{ product.name }}
-                            </RouterLink>
-                        </td>
-                        <td>{{ product.inn }}</td>
-                        <td>{{ product.quantity_conclusions }}</td>
-                        <td class="positive">{{ product.quantity_positive_conclusion }}</td>
-                        <td class="negative">{{ product.quantity_negative_conclusion }}</td>
-                    </tr>
-                </tbody>
-            </table>
-
+            <div v-else-if="data.length" class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Наименование генерального проектировщика</th>
+                            <th>ИНН</th>
+                            <th>Всего заключений</th>
+                            <th>Положительные</th>
+                            <th>Отрицательные</th>
+                            <th>Средний срок экспертизы</th>
+                            <th>Средний срок комплектности</th>
+                            <th>Специализация по направлению</th>
+                            <th>Специализация по виду работ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="product in data" :key="product.inn">
+                            <td>
+                                <RouterLink :to="`/products/name/${encodeURIComponent(product.name)}`">
+                                    {{ product.name }}
+                                </RouterLink>
+                            </td>
+                            <td>{{ product.inn }}</td>
+                            <td>{{ product.quantity_conclusions }}</td>
+                            <td class="positive">{{ product.quantity_positive_conclusion }}</td>
+                            <td class="negative">{{ product.quantity_negative_conclusion }}</td>
+                            <td>{{ product.average_expertise_date }}</td>
+                            <td>{{ product.average_complect_date }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <p v-else>Нет данных.</p>
         </Pagination>
     </div>
@@ -103,15 +110,6 @@ const uploadFile = async () => {
 </script>
 
 <style scoped>
-.container {
-    max-width: 960px;
-    margin: 2rem auto;
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
 .custom-file-upload {
     display: inline-block;
     background-color: #4f46e5;
@@ -148,16 +146,6 @@ const uploadFile = async () => {
     display: flex;
     flex-direction: column;
     text-align: center;
-}
-
-.table {
-    width: 100%;
-    border-spacing: 0 10px;
-}
-
-.table th,
-.table td {
-    padding: 1rem;
 }
 
 .positive {
