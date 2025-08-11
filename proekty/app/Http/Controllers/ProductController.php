@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Repositories\ProductRepositoryInterface;
 use App\Services\ProductImportService;
 use App\Services\UniqueProductFilterService;
 use Illuminate\Http\Request;
@@ -18,48 +19,21 @@ class ProductController extends Controller
         return view('index');
     }
 
-    public function fetch(Request $request)
+    public function fetch(Request $request, ProductRepositoryInterface $repository)
     {
-        $search = trim($request->input('search', ''));
-        $page = max((int) $request->input('page', 1), 1);
+        $search  = trim($request->input('search', ''));
+        $page    = max((int) $request->input('page', 1), 1);
         $perPage = 10;
 
         $cacheKey = "products_grouped_inn:" . md5($search) . "_page:" . $page;
 
-        $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($search, $page, $perPage) {
-            // 1. Получить все уникальные INN с учётом поиска
-            $uniqueInns = Product::query()
-                ->when($search, fn($q) => $q->where('name', 'ILIKE', "%$search%"))
-                ->whereNotNull('inn')
-                ->where('inn', '!=', '')
-                ->select('inn')
-                ->distinct()
-                ->orderBy('inn')
-                ->pluck('inn')
-                ->toArray();
-
-            $total = count($uniqueInns);
-
-            // 2. Разбить на страницы вручную
-            $currentInns = array_slice($uniqueInns, ($page - 1) * $perPage, $perPage);
-
-            // 3. Получить по одному продукту на каждый INN
-            $items = Product::query()
-                ->whereIn('inn', $currentInns)
-                ->whereNotNull('inn')
-                ->where('inn', '!=', '')
-                ->when($search, fn($q) => $q->where('name', 'ILIKE', "%$search%"))
-                ->groupBy('inn')
-                ->selectRaw('MIN(id) as id') // один продукт на inn
-                ->pluck('id');
-
-            $products = Product::whereIn('id', $items)
-                ->orderBy('inn')
-                ->get();
+        $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($repository, $search, $page, $perPage) {
+            $items = $repository->getGroupedByInn($search, $page, $perPage);
+            $total = $repository->countUniqueInns($search);
 
             return new LengthAwarePaginator(
-                $products,
-                $total, // общее число уникальных inn
+                $items,
+                $total,
                 $perPage,
                 $page,
                 ['path' => request()->url(), 'query' => request()->query()]
@@ -68,6 +42,7 @@ class ProductController extends Controller
 
         return response()->json($cached);
     }
+
 
     public function fetchByName($name, Request $request)
     {
