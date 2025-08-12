@@ -80,7 +80,7 @@ h1 {
     min-width: 800px;
     border-collapse: separate;
     border-spacing: 0 12px;
-    table-layout: auto;
+    table-layout: fixed;
 
     thead tr {
         background: #6c63ff;
@@ -92,6 +92,7 @@ h1 {
     td {
         padding: 0.5rem 0.6rem;
         text-align: center;
+        width: 160px;
     }
 
     tbody tr {

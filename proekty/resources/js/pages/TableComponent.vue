@@ -41,16 +41,20 @@
                             <th>Средний срок комплектности</th>
                             <th>Специализация по направлению</th>
                             <th>Специализация по виду работ</th>
+                            <th>Рейтинг</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="product in data" :key="product.inn">
                             <td>
-                                <RouterLink :to="`/products/name/${encodeURIComponent(product.name)}`">
-                                    {{ product.name }}
+                                {{ product.name }}
+                            </td>
+                            <td>
+                                <RouterLink :to="`/products/inn/${encodeURIComponent(product.inn)}`">
+                                    {{ product.inn }}
                                 </RouterLink>
                             </td>
-                            <td>{{ product.inn }}</td>
+
                             <td>{{ product.quantity_conclusions }}</td>
                             <td class="positive">{{ product.quantity_positive_conclusion }}</td>
                             <td class="negative">{{ product.quantity_negative_conclusion }}</td>

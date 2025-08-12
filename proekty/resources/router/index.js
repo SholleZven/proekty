@@ -9,8 +9,8 @@ const routes = [
     component: TableComponent
   },
   {
-    path: '/products/name/:name',
-    name: 'ProductsByName',
+    path: '/products/inn/:inn',
+    name: 'ProductsByInn',
     component: ProductsByName,
     props: true
   }

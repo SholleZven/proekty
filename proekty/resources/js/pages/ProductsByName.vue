@@ -1,31 +1,49 @@
 <template>
     <div class="container">
-        <h2>Записи с названием: "{{ name }}"</h2>
+        <h2>Записи по ИНН: "{{ inn }}"</h2>
 
-        <Pagination :url="`/api/products/by-name/${encodeURIComponent(name)}`" :watchParams="[name]"
+        <Pagination :url="`/api/products/by-inn/${encodeURIComponent(inn)}`" :watchParams="[inn]"
             v-slot="{ data, loading }">
             <div v-if="loading" class="loading-wrapper">
                 <LoadingDots class="large-loading" />
             </div>
 
-            <table v-else-if="data.length" class="table">
+            <div v-else-if="data.length" class="table-wrapper">
+            <table class="table">
                 <thead>
                     <tr>
-                        <th>Наименование генерального проектировщика</th>
+                        <th>Наименование проекта</th>
                         <!-- <th>Рейтинг</th> -->
-                        <th>Номер проекта</th>
+                        <th>Вид объекта</th>
+                        <th>Функциональное назначение объекта</th>
+                        <th>Вид услуги</th>
+                        <th>Дата выдачи заключения</th>
+                        <th>Результат заключения</th>
+                        <th>Заявленная сметная стоимость в текущих ценах, млн. руб.</th>
+                        <th>Откорректированная сметная стоимость в текущих ценах, млн. руб.</th>
+                        <th>Этап строительных работ</th>
+                        <th>Cрок экспертизы, раб. дни</th>
+                        <th>Cрок комплектности, раб. дни</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="product in data" :key="product.id">
-                        <td>
-                            {{ product.name }}
-                        </td>
+                        <td>{{ product.project_name }}</td>
                         <!-- <td>{{ product.positive_conclusion }}</td> -->
-                        <td>{{ product.project_number }}</td>
+                        <td>{{ product.object_type }}</td>
+                        <td>{{ product.functional_purpose }}</td>
+                        <td>{{ product.service_type }}</td>
+                        <td>{{ product.conclusion_date }}</td>
+                        <td>{{ product.conclusion_result }}</td>
+                        <td>{{ product.cost_declared }}</td>
+                        <td>{{ product.cost_adjusted }}</td>
+                        <td>{{ product.stage_construction_works }}</td>
+                        <td>{{ product.conclusion_date - product.contract_date}}</td>
+                        <td>{{ product.contract_date - product.registration_date }}</td>
                     </tr>
                 </tbody>
             </table>
+            </div>
 
             <p v-else>Нет записей с таким названием.</p>
         </Pagination>
@@ -43,12 +61,12 @@ import LoadingDots from '../components/LoadingDots.vue'
 import Pagination from '../components/Pagination.vue'
 
 const route = useRoute()
-const name = ref(route.params.name)
+const inn = ref(route.params.inn)
 const loading = ref(false)
 
 // обновляем name при переходе по роуту
-watch(() => route.params.name, (newVal) => {
-    name.value = newVal
+watch(() => route.params.inn, (newVal) => {
+    inn.value = newVal
 })
 </script>
 

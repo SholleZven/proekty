@@ -44,15 +44,15 @@ class ProductController extends Controller
     }
 
 
-    public function fetchByName($name, Request $request)
+    public function fetchByInn($name, Request $request)
     {
         $page = (int) $request->input('page', 1);
-        $perPage = 10;
+        $perPage = 3;
 
         $cacheKey = "products_by_name:" . md5($name) . "_page:" . $page;
 
         $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($name, $page, $perPage) {
-            return Product::where('name', $name)->paginate($perPage, ['*'], 'page', $page);
+            return Product::where('inn', $name)->paginate($perPage, ['*'], 'page', $page);
         });
 
         return response()->json($cached);
