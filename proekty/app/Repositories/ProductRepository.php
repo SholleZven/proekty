@@ -80,4 +80,56 @@ final class ProductRepository implements ProductRepositoryInterface
 
         return (int) $result->total;
     }
+
+    public function getGroupedByName(string $inn, int $page, int $perPage): Collection
+    {
+        $offset = ($page - 1) * $perPage;
+
+        $items = $this->connection->select("
+            SELECT
+                p.inn,
+                project_name,
+                object_type,
+                functional_purpose,
+                service_type,
+                conclusion_date,
+                conclusion_result,
+                cost_declared,
+                cost_adjusted,
+                stage_construction_works,
+                conclusion_date - contract_date AS expertise_date,
+                contract_date - registration_date AS complect_date
+
+            FROM products p
+            WHERE p.inn IS NOT NULL
+            AND p.inn != ''
+            AND p.inn = :inn
+
+            LIMIT :perPage OFFSET :offset
+    ", [
+            'inn'          =>  $inn,
+            'perPage'       => $perPage,
+            'offset'        => $offset
+        ]);
+
+        return collect($items);
+    }
+
+    public function countUniqueNames(string $inn): int
+    {
+        $result = $this->connection->selectOne(
+            "
+            SELECT COUNT(*) AS total
+            FROM products p
+            WHERE p.inn IS NOT NULL
+              AND p.inn != ''
+              AND p.inn = :inn
+        ",
+            [
+                'inn'          => $inn
+            ]
+        );
+
+        return (int) $result->total;
+    }
 }

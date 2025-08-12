@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Repositories\ProductRepository;
 use App\Repositories\ProductRepositoryInterface;
 use App\Services\ProductImportService;
 use App\Services\UniqueProductFilterService;
@@ -44,15 +45,28 @@ class ProductController extends Controller
     }
 
 
-    public function fetchByInn($name, Request $request)
+    public function fetchByInn($name, Request $request, ProductRepository $repository)
     {
         $page = (int) $request->input('page', 1);
         $perPage = 3;
 
         $cacheKey = "products_by_name:" . md5($name) . "_page:" . $page;
 
-        $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($name, $page, $perPage) {
-            return Product::where('inn', $name)->paginate($perPage, ['*'], 'page', $page);
+        // $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($name, $page, $perPage) {
+        //     return Product::where('inn', $name)->paginate($perPage, ['*'], 'page', $page);
+        // });
+
+        $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($name, $page, $perPage, $repository) {
+            $items = $repository->getGroupedByName($name, $page, $perPage);
+            $total = $repository->countUniqueNames($name);
+
+            return new LengthAwarePaginator(
+                $items,
+                $total,
+                $perPage,
+                $page,
+                ['path' => request()->url(), 'query' => request()->query()]
+            );
         });
 
         return response()->json($cached);

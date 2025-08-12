@@ -8,4 +8,6 @@ interface ProductRepositoryInterface
 {
     public function getGroupedByInn(string $search, int $page, int $perPage): Collection;
     public function countUniqueInns(string $search): int;
+    public function getGroupedByName(string $inn, int $page, int $perPage): Collection;
+    public function countUniqueNames(string $inn): int;
 }
