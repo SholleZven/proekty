@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Repositories\ProductRepository;
 use App\Repositories\ProductRepositoryInterface;
 use App\Services\ProductImportService;
@@ -51,10 +50,6 @@ class ProductController extends Controller
         $perPage = 3;
 
         $cacheKey = "products_by_name:" . md5($name) . "_page:" . $page;
-
-        // $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($name, $page, $perPage) {
-        //     return Product::where('inn', $name)->paginate($perPage, ['*'], 'page', $page);
-        // });
 
         $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($name, $page, $perPage, $repository) {
             $items = $repository->getGroupedByName($name, $page, $perPage);

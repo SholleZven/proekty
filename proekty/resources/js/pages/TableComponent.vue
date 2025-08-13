@@ -62,6 +62,7 @@
                             <td>{{ product.average_complect_date }}</td>
                             <td>{{ product.most_common_functional_purpose }}</td>
                             <td>{{ product.most_common_stage_construction_works }}</td>
+                            <td>{{ product.rating }}</td>
                         </tr>
                     </tbody>
                 </table>
