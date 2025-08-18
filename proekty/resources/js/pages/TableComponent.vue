@@ -34,6 +34,7 @@
                         <tr>
                             <th>Наименование генерального проектировщика</th>
                             <th>ИНН</th>
+                            <th>Рейтинг</th>
                             <th>Всего заключений</th>
                             <th>Положительные</th>
                             <th>Отрицательные</th>
@@ -41,20 +42,17 @@
                             <th>Средний срок комплектности</th>
                             <th>Специализация по направлению</th>
                             <th>Специализация по виду работ</th>
-                            <th>Рейтинг</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="product in data" :key="product.inn">
-                            <td>
-                                {{ product.name }}
-                            </td>
+                            <td>{{ product.name }}</td>
                             <td>
                                 <RouterLink :to="`/products/inn/${encodeURIComponent(product.inn)}`">
                                     {{ product.inn }}
                                 </RouterLink>
                             </td>
-
+                            <td>{{ product.rating }}</td>
                             <td>{{ product.quantity_conclusions }}</td>
                             <td class="positive">{{ product.quantity_positive_conclusion }}</td>
                             <td class="negative">{{ product.quantity_negative_conclusion }}</td>
@@ -62,7 +60,6 @@
                             <td>{{ product.average_complect_date }}</td>
                             <td>{{ product.most_common_functional_purpose }}</td>
                             <td>{{ product.most_common_stage_construction_works }}</td>
-                            <td>{{ product.rating }}</td>
                         </tr>
                     </tbody>
                 </table>
