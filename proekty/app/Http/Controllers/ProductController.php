@@ -25,10 +25,42 @@ class ProductController extends Controller
         $page    = max((int) $request->input('page', 1), 1);
         $perPage = 10;
 
-        $cacheKey = "products_grouped_inn:" . md5($search) . "_page:" . $page;
+        // Белый список колонок, по которым разрешаем сортировку
 
-        $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($repository, $search, $page, $perPage) {
-            $items = $repository->getGroupedByInn($search, $page, $perPage);
+        $allowedSort = [
+            'name',
+            'inn',
+            'quantity_conclusions',
+            'quantity_positive_conclusion',
+            'quantity_negative_conclusion',
+            'average_expertise_date',
+            'average_complect_date',
+            'most_common_functional_purpose',
+            'most_common_stage_construction_works',
+            'rating',
+        ];
+
+        $sortColumn    = $request->input('sortColumn');
+        $sortDirection = strtolower($request->input('sortDirection', 'desc')) === 'asc' ? 'asc' : 'desc';
+
+        // Значения по умолчанию (сортируем по рейтингу убыв.)
+
+        if (!in_array($sortColumn, $allowedSort, true)) {
+            $sortColumn = 'rating';
+            $sortDirection = 'desc';
+        }
+
+        $cacheKey = sprintf(
+            'products_grouped_inn:%s:%s:%s_page:%d_per:%d',
+            md5($search),
+            $sortColumn,
+            $sortDirection,
+            $page,
+            $perPage
+        );
+
+        $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($repository, $search, $page, $perPage, $sortColumn, $sortDirection) {
+            $items = $repository->getGroupedByInn($search, $page, $perPage, $sortColumn, $sortDirection);
             $total = $repository->countUniqueInns($search);
 
             return new LengthAwarePaginator(

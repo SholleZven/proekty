@@ -12,39 +12,40 @@ final class ProductRepository implements ProductRepositoryInterface
         private ConnectionInterface $connection,
     ) {}
 
-    public function getGroupedByInn(string $search, int $page, int $perPage): Collection
+    public function getGroupedByInn(string $search, int $page, int $perPage, string $sortColumn, string $sortDirection): Collection
     {
         $offset = ($page - 1) * $perPage;
 
-        $items = $this->connection->select("
+        $orderableMap = [
+            'name'                               => 'LOWER(b.name)', // регистронезависимая сортировка
+            'inn'                                => 'b.inn',
+            'quantity_conclusions'               => 'b.quantity_conclusions',
+            'quantity_positive_conclusion'       => 'b.quantity_positive_conclusion',
+            'quantity_negative_conclusion'       => 'b.quantity_negative_conclusion',
+            'average_expertise_date'             => 'b.average_expertise_date',
+            'average_complect_date'              => 'b.average_complect_date',
+            'most_common_functional_purpose'     => 'LOWER(b.most_common_functional_purpose)',
+            'most_common_stage_construction_works' => 'LOWER(b.most_common_stage_construction_works)',
+            'rating'                             => 'rating',
+        ];
+
+        $orderExpr = $orderableMap[$sortColumn] ?? 'rating';
+        $direction = strtolower($sortDirection) === 'asc' ? 'ASC' : 'DESC';
+
+        $items = $this->connection->select(
+            "
             WITH base AS (
                 SELECT
                     p.inn,
                     MIN(p.name) AS name,
-                    COUNT(p.conclusion_result) AS quantity_conclusions,
-                    SUM(CASE WHEN p.conclusion_result = 'Положительное' THEN 1 ELSE 0 END) AS quantity_positive_conclusion,
-                    SUM(CASE WHEN p.conclusion_result = 'Отрицательное' THEN 1 ELSE 0 END) AS quantity_negative_conclusion,
-                    CEIL(AVG(conclusion_date - contract_date)) AS average_expertise_date,
-                    CEIL(AVG(contract_date - registration_date)) AS average_complect_date,
-                    (
-                        SELECT fp.functional_purpose
-                        FROM products fp
-                        WHERE fp.inn = p.inn
-                        GROUP BY fp.functional_purpose
-                        ORDER BY COUNT(*) DESC
-                        LIMIT 1
-                    ) AS most_common_functional_purpose,
-                    (
-                        SELECT fp.stage_construction_works
-                        FROM products fp
-                        WHERE fp.inn = p.inn
-                        GROUP BY fp.stage_construction_works
-                        ORDER BY COUNT(*) DESC
-                        LIMIT 1
-                    ) AS most_common_stage_construction_works
+                    COUNT(*) AS quantity_conclusions,
+                    SUM((p.conclusion_result = 'Положительное')::int) AS quantity_positive_conclusion,
+                    SUM((p.conclusion_result = 'Отрицательное')::int) AS quantity_negative_conclusion,
+                    CEIL(AVG(p.conclusion_date - p.contract_date)) AS average_expertise_date,
+                    CEIL(AVG(p.contract_date - p.registration_date)) AS average_complect_date
                 FROM products p
                 WHERE p.inn IS NOT NULL
-                AND p.inn != ''
+                AND p.inn <> ''
                 AND (
                     :search = ''
                     OR p.name ILIKE :searchPattern
@@ -52,13 +53,35 @@ final class ProductRepository implements ProductRepositoryInterface
                 )
                 GROUP BY p.inn
             ),
+            common_fp AS (
+                SELECT DISTINCT ON (inn)
+                    inn, functional_purpose
+                FROM (
+                    SELECT inn, functional_purpose, COUNT(*) AS cnt
+                    FROM products
+                    WHERE inn IS NOT NULL AND inn <> ''
+                    GROUP BY inn, functional_purpose
+                    ORDER BY inn, cnt DESC
+                ) t
+            ),
+            common_stage AS (
+                SELECT DISTINCT ON (inn)
+                    inn, stage_construction_works
+                FROM (
+                    SELECT inn, stage_construction_works, COUNT(*) AS cnt
+                    FROM products
+                    WHERE inn IS NOT NULL AND inn <> ''
+                    GROUP BY inn, stage_construction_works
+                    ORDER BY inn, cnt DESC
+                ) t
+            ),
             max_vals AS (
-                SELECT
-                    MAX(quantity_conclusions) AS max_count
-                FROM base
+                SELECT MAX(quantity_conclusions) AS max_count FROM base
             )
             SELECT
                 b.*,
+                fp.functional_purpose AS most_common_functional_purpose,
+                st.stage_construction_works AS most_common_stage_construction_works,
                 ROUND(
                     0.8 * (
                         (b.quantity_positive_conclusion - 2 * b.quantity_negative_conclusion)::numeric
@@ -69,16 +92,19 @@ final class ProductRepository implements ProductRepositoryInterface
                     2
                 ) AS rating
             FROM base b
+            LEFT JOIN common_fp fp ON fp.inn = b.inn
+            LEFT JOIN common_stage st ON st.inn = b.inn
             CROSS JOIN max_vals m
-            ORDER BY rating DESC
+            ORDER BY {$orderExpr} {$direction} NULLS LAST
             LIMIT :perPage OFFSET :offset;
-
-    ", [
-            'search'        => $search,
-            'searchPattern' => '%' . $search . '%',
-            'perPage'       => $perPage,
-            'offset'        => $offset
-        ]);
+        ",
+            [
+                'search'        => $search,
+                'searchPattern' => '%' . $search . '%',
+                'perPage'       => $perPage,
+                'offset'        => $offset
+            ]
+        );
 
         return collect($items);
     }
