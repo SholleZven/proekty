@@ -1,7 +1,6 @@
 <template>
     <div class="container">
         <h1>Проекты</h1>
-
         <!-- Загрузка Excel -->
         <form @submit.prevent="uploadFile" class="upload">
             <label class="custom-file-upload">
@@ -104,6 +103,19 @@
             <p v-else>Нет данных.</p>
         </Pagination>
     </div>
+
+    <ErrorToast
+                    :show="showError"
+                    :message="errorMessage"
+                    @close="showError = false"
+    />
+
+    <SuccessToast
+                    :show="showSuccessful"
+                    :message="successfulMessage"
+                    @close="showSuccessful= false"
+    />
+
 </template>
 
 <script setup>
@@ -115,12 +127,19 @@ import Pagination from '../components/Pagination.vue'
 import SearchInput from '../components/SearchInput.vue'
 import SortIcon from '../components/SortIcon.vue'
 import { useSort } from '../composables/useSort'
+import ErrorToast from '../components/Toasts/ErrorToast.vue'
+import SuccessToast from '../components/Toasts/SuccessToast.vue'
 
 const file = ref(null)
 const fileName = ref('')
 const loadingUpload = ref(false)
 const searchTerm = ref('')
 const reloadKey = ref(0)
+
+const showError = ref(false)
+const errorMessage = ref('')
+const showSuccessful = ref(false)
+const successfulMessage = ref('')
 
 const { sortColumn, sortDirection, sortBy } = useSort()
 
@@ -145,8 +164,12 @@ const uploadFile = async () => {
     try {
         await axios.post('/api/products/upload', formData)
         reloadKey.value++
+        successfulMessage.value = 'Файл успешно подгружен'
+        showSuccessful.value = true
     } catch (e) {
         console.error('Ошибка загрузки файла', e)
+        errorMessage.value = 'Не удалось загрузить файл'
+        showError.value = true
     } finally {
         loadingUpload.value = false
     }
