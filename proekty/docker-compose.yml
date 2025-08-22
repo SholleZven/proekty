@@ -27,8 +27,6 @@ services:
       - laravel
     depends_on:
       - backend
-    ports:
-      - "80:80"  # Можно сделать отдельный порт, если backend тоже слушает 80
 
   # PostgreSQL
   postgres:
@@ -64,8 +62,9 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./:/var/www/html
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./dist:/usr/share/nginx/html
+      - ./:/var/www/html
     depends_on:
       - backend
       - frontend
