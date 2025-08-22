@@ -29,8 +29,8 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 COPY . .
 
 # Опционально: создаём storage и cache директории с правильными правами
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/vendor \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/vendor
 USER www-data
 
 CMD ["php-fpm"]
