@@ -31,118 +31,140 @@ h1 {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
+}
 
-    input[type="file"] {
-        flex-grow: 1;
-        padding: 0.6rem 1rem;
-        border: 2px solid #ddd;
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: border-color 0.3s ease;
+.upload input[type="file"] {
+    flex-grow: 1;
+    padding: 0.6rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
 
-        &:focus {
-            outline: none;
-            border-color: #6c63ff;
-            box-shadow: 0 0 6px #6c63ff66;
-        }
-    }
+.upload input[type="file"]:focus {
+    outline: none;
+    border-color: #6c63ff;
+    box-shadow: 0 0 6px #6c63ff66;
+}
 
-    .upload-buttons {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-    }
+.upload .upload-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
 
-    button {
-        background: #6c63ff;
-        color: #fff;
-        border: none;
-        padding: 0.65rem 1.5rem;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background 0.3s ease;
+.upload button {
+    background: #6c63ff;
+    color: #fff;
+    border: none;
+    padding: 0.65rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
 
-        &:hover {
-            background: #574fdb;
-        }
-    }
+.upload button:hover {
+    background: #574fdb;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
 }
 
 .table {
     width: 100%;
+    min-width: 800px;
     border-collapse: separate;
     border-spacing: 0 12px;
-    overflow-x: auto;
+    table-layout: fixed;
+}
 
-    thead tr {
-        background: #6c63ff;
-        color: white;
-        border-radius: 12px;
-    }
+.table thead tr {
+    background: #6c63ff;
+    color: white;
+    border-radius: 12px;
+}
 
-    th,
-    td {
-        padding: 1rem 1.2rem;
-        text-align: left;
-    }
+.table th,
+.table td {
+    padding: 0.5rem 0.6rem;
+    text-align: center;
+    width: 170px;
+}
 
-    tbody tr {
-        background: #fafafa;
-        box-shadow: 0 3px 5px rgb(0 0 0 / 0.05);
-        border-radius: 12px;
+/* Фиксированный первый столбец */
+.table th:first-child,
+.table td:first-child {
+    position: sticky;
+    left: 0;
+    background: #fff;
+    z-index: 2;
+}
 
-        td {
-            border: none;
-        }
-    }
+.table th:first-child {
+    z-index: 3;
+    background: #6c63ff;
+    color: white;
+}
 
-    tbody tr:hover {
-        background: #e3e0ff;
-    }
+.table tbody tr {
+    background: #fafafa;
+    box-shadow: 0 3px 5px rgb(0 0 0 / 0.05);
+    border-radius: 12px;
+}
 
-    .pagination {
-        margin-top: 1rem;
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        flex-wrap: wrap;
+.table tbody tr td {
+    border: none;
+}
 
-        button {
-            font-size: 1rem;
-            padding: 0.75rem 1.2rem;
-        }
-    }
+.table tbody tr:hover {
+    background: #e3e0ff;
+}
+
+.pagination {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.pagination button {
+    font-size: 1rem;
+    padding: 0.75rem 1.2rem;
 }
 
 .input-wrapper {
     margin-bottom: 1rem;
     width: 100%;
+}
 
-    input[type="text"] {
-        padding: 0.6rem 1rem;
-        width: 100%;
-        box-sizing: border-box;
-        max-width: 100%;
-        display: block;
-        border: 2px solid #ccc;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-family: inherit;
-        color: #333;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+.input-wrapper input[type="text"] {
+    padding: 0.6rem 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 100%;
+    display: block;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    color: #333;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
 
-        &::placeholder {
-            color: #999;
-        }
+.input-wrapper input[type="text"]::placeholder {
+    color: #999;
+}
 
-        &:focus {
-            outline: none;
-            border-color: #6c63ff;
-            box-shadow: 0 0 8px #6c63ff66;
-        }
-    }
+.input-wrapper input[type="text"]:focus {
+    outline: none;
+    border-color: #6c63ff;
+    box-shadow: 0 0 8px #6c63ff66;
 }
 
 button {
@@ -155,10 +177,10 @@ button {
     font-size: 1rem;
     cursor: pointer;
     transition: background 0.3s ease;
+}
 
-    &:hover {
-        background: #574fdb;
-    }
+button:hover {
+    background: #574fdb;
 }
 
 /* --- Responsive Design --- */
@@ -180,21 +202,21 @@ button {
     .upload {
         flex-direction: column;
         gap: 0.8rem;
+    }
 
-        input[type="file"],
-        button {
-            width: 100%;
-            font-size: 1rem;
-        }
+    .upload input[type="file"],
+    .upload button {
+        width: 100%;
+        font-size: 1rem;
     }
 
     .table {
         font-size: 0.95rem;
+    }
 
-        th,
-        td {
-            padding: 0.8rem;
-        }
+    .table th,
+    .table td {
+        padding: 0.4rem;
     }
 }
 
@@ -225,19 +247,23 @@ button {
         width: 100%;
     }
 
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
     .table {
         font-size: 0.9rem;
-        overflow-x: auto;
+        min-width: unset;
+    }
 
-        th,
-        td {
-            padding: 0.7rem;
-        }
+    .table th,
+    .table td {
+        padding: 0.35rem;
+    }
 
-        .pagination button {
-            width: 100%;
-            font-size: 1rem;
-            padding: 1rem;
-        }
+    .pagination button {
+        width: 100%;
+        font-size: 1rem;
+        padding: 1rem;
     }
 }

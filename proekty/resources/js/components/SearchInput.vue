@@ -1,6 +1,6 @@
 <template>
     <div class="input-wrapper">
-        <input type="text" v-model="searchQuery" @input="debouncedSearch" placeholder="Поиск по названию..."
+        <input type="text" v-model="searchQuery" @input="debouncedSearch" placeholder="Введите наименование генерального проектировщика или ИНН..."
             autocomplete="off" spellcheck="false" />
     </div>
 </template>

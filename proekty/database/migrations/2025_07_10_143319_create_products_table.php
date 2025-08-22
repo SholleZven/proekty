@@ -30,9 +30,6 @@ return new class extends Migration
             $table->decimal('cost_declared', 10, 5)->nullable(true);
             $table->decimal('cost_adjusted', 10, 5)->nullable(true);
             $table->string('stage_construction_works')->nullable(true);
-            // $table->string('rating');
-            // $table->decimal('rating', 2, 1);
-            // $table->integer('positive_conclusion');
             $table->timestamps();
         });
     }

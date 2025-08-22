@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
+use App\Repositories\ProductRepository;
+use App\Repositories\ProductRepositoryInterface;
 use App\Services\ProductImportService;
 use App\Services\UniqueProductFilterService;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,37 +19,81 @@ class ProductController extends Controller
         return view('index');
     }
 
-    public function fetch(Request $request)
+    public function fetch(Request $request, ProductRepositoryInterface $repository)
     {
-        $search = trim($request->input('search', ''));
-        $page = (int) $request->input('page', 1);
+        $search  = trim($request->input('search', ''));
+        $page    = max((int) $request->input('page', 1), 1);
         $perPage = 10;
 
-        // Уникальный ключ по параметрам поиска и страницы
-        $cacheKey = "products_search:" . md5($search) . "_page:" . $page;
+        // Белый список колонок, по которым разрешаем сортировку
 
-        $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($search, $page, $perPage) {
-            $query = Product::query();
+        $allowedSort = [
+            'name',
+            'inn',
+            'quantity_conclusions',
+            'quantity_positive_conclusion',
+            'quantity_negative_conclusion',
+            'average_expertise_date',
+            'average_complect_date',
+            'most_common_functional_purpose',
+            'most_common_stage_construction_works',
+            'rating',
+        ];
 
-            if (!empty($search)) {
-                $query->where('name', 'ILIKE', '%' . $search . '%');
-            }
+        $sortColumn    = $request->input('sortColumn');
+        $sortDirection = strtolower($request->input('sortDirection', 'desc')) === 'asc' ? 'asc' : 'desc';
 
-            return $query->paginate($perPage, ['*'], 'page', $page);
+        // Значения по умолчанию (сортируем по рейтингу убыв.)
+
+        if (!in_array($sortColumn, $allowedSort, true)) {
+            $sortColumn = 'rating';
+            $sortDirection = 'desc';
+        }
+
+        $cacheKey = sprintf(
+            'products_grouped_inn:%s:%s:%s_page:%d_per:%d',
+            md5($search),
+            $sortColumn,
+            $sortDirection,
+            $page,
+            $perPage
+        );
+
+        $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($repository, $search, $page, $perPage, $sortColumn, $sortDirection) {
+            $items = $repository->getGroupedByInn($search, $page, $perPage, $sortColumn, $sortDirection);
+            $total = $repository->countUniqueInns($search);
+
+            return new LengthAwarePaginator(
+                $items,
+                $total,
+                $perPage,
+                $page,
+                ['path' => request()->url(), 'query' => request()->query()]
+            );
         });
 
         return response()->json($cached);
     }
 
-    public function fetchByName($name, Request $request)
+
+    public function fetchByInn($name, Request $request, ProductRepository $repository)
     {
         $page = (int) $request->input('page', 1);
-        $perPage = 10;
+        $perPage = 3;
 
         $cacheKey = "products_by_name:" . md5($name) . "_page:" . $page;
 
-        $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($name, $page, $perPage) {
-            return Product::where('name', $name)->paginate($perPage, ['*'], 'page', $page);
+        $cached = Cache::tags(['products'])->remember($cacheKey, 60 * 30, function () use ($name, $page, $perPage, $repository) {
+            $items = $repository->getGroupedByName($name, $page, $perPage);
+            $total = $repository->countUniqueNames($name);
+
+            return new LengthAwarePaginator(
+                $items,
+                $total,
+                $perPage,
+                $page,
+                ['path' => request()->url(), 'query' => request()->query()]
+            );
         });
 
         return response()->json($cached);
