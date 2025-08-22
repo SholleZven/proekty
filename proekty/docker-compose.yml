@@ -8,6 +8,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./:/var/www/html
+      - storage_data:/var/www/html/storage
+      - cache_data:/var/www/html/bootstrap/cache
     depends_on:
       - postgres
       - redis
@@ -21,12 +23,12 @@ services:
       dockerfile: ./docker/frontend.Dockerfile
     container_name: frontend
     restart: unless-stopped
-    working_dir: /app
-    volumes:
-      - ./:/app
-      - /app/node_modules
     networks:
       - laravel
+    depends_on:
+      - backend
+    ports:
+      - "80:80"  # Можно сделать отдельный порт, если backend тоже слушает 80
 
   # PostgreSQL
   postgres:
@@ -50,7 +52,7 @@ services:
     container_name: redis
     restart: unless-stopped
     ports:
-      - "6380:6380"
+      - "6379:6379"
     networks:
       - laravel
 
@@ -72,6 +74,8 @@ services:
 
 volumes:
   postgres_data:
+  storage_data:
+  cache_data:
 
 networks:
   laravel:
