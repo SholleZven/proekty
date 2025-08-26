@@ -17,7 +17,7 @@ final class ProductRepository implements ProductRepositoryInterface
         $offset = ($page - 1) * $perPage;
 
         $orderableMap = [
-            'name'                               => 'LOWER(b.name)', // регистронезависимая сортировка
+            'name'                               => 'LOWER(b.name)',
             'inn'                                => 'b.inn',
             'quantity_conclusions'               => 'b.quantity_conclusions',
             'quantity_positive_conclusion'       => 'b.quantity_positive_conclusion',
@@ -27,6 +27,7 @@ final class ProductRepository implements ProductRepositoryInterface
             'most_common_functional_purpose'     => 'LOWER(b.most_common_functional_purpose)',
             'most_common_stage_construction_works' => 'LOWER(b.most_common_stage_construction_works)',
             'rating'                             => 'rating',
+            'rating_rank'                        => 'rating_rank',
         ];
 
         $orderExpr = $orderableMap[$sortColumn] ?? 'rating';
@@ -34,7 +35,7 @@ final class ProductRepository implements ProductRepositoryInterface
 
         $items = $this->connection->select(
             "
-            WITH base AS (
+            WITH base_all AS (
                 SELECT
                     p.inn,
                     MIN(p.name) AS name,
@@ -44,13 +45,7 @@ final class ProductRepository implements ProductRepositoryInterface
                     CEIL(AVG(p.conclusion_date - p.contract_date)) AS average_expertise_date,
                     CEIL(AVG(p.contract_date - p.registration_date)) AS average_complect_date
                 FROM products p
-                WHERE p.inn IS NOT NULL
-                AND p.inn <> ''
-                AND (
-                    :search = ''
-                    OR p.name ILIKE :searchPattern
-                    OR p.inn ILIKE :searchPattern
-                )
+                WHERE p.inn IS NOT NULL AND p.inn <> ''
                 GROUP BY p.inn
             ),
             common_fp AS (
@@ -75,26 +70,35 @@ final class ProductRepository implements ProductRepositoryInterface
                     ORDER BY inn, cnt DESC
                 ) t
             ),
-            max_vals AS (
-                SELECT MAX(quantity_conclusions) AS max_count FROM base
+            scored_all AS (
+                SELECT
+                    b.*,
+                    fp.functional_purpose AS most_common_functional_purpose,
+                    st.stage_construction_works AS most_common_stage_construction_works,
+                    ROUND(
+                        (
+                            0.6 * COALESCE(LN(NULLIF(b.quantity_positive_conclusion,0)::double precision),0)
+                        + 0.2 * ((b.quantity_positive_conclusion + 1)::numeric
+                                / NULLIF(b.quantity_positive_conclusion + b.quantity_negative_conclusion + 2,0))
+                        + 0.2 * ((b.quantity_positive_conclusion + 1)::numeric
+                                / NULLIF(b.quantity_negative_conclusion + 1,0))
+                        )::numeric, 6
+                    ) AS rating
+                FROM base_all b
+                LEFT JOIN common_fp fp ON fp.inn = b.inn
+                LEFT JOIN common_stage st ON st.inn = b.inn
+            ),
+            ranked_all AS (
+                SELECT
+                    s.*,
+                    RANK() OVER (ORDER BY s.rating DESC NULLS LAST) AS rating_rank
+                FROM scored_all s
             )
-            SELECT
-                b.*,
-                fp.functional_purpose AS most_common_functional_purpose,
-                st.stage_construction_works AS most_common_stage_construction_works,
-                ROUND(
-                    0.8 * (
-                        (b.quantity_positive_conclusion - 2 * b.quantity_negative_conclusion)::numeric
-                        / NULLIF(b.quantity_conclusions, 0)
-                    ) * 100
-                    +
-                    0.2 * (b.quantity_conclusions::numeric / NULLIF(m.max_count, 0)) * 100,
-                    2
-                ) AS rating
-            FROM base b
-            LEFT JOIN common_fp fp ON fp.inn = b.inn
-            LEFT JOIN common_stage st ON st.inn = b.inn
-            CROSS JOIN max_vals m
+            SELECT *
+            FROM ranked_all b
+            WHERE :search = ''
+            OR b.name ILIKE :searchPattern
+            OR b.inn ILIKE :searchPattern
             ORDER BY {$orderExpr} {$direction} NULLS LAST
             LIMIT :perPage OFFSET :offset;
         ",

@@ -38,6 +38,7 @@ class ProductController extends Controller
             'most_common_functional_purpose',
             'most_common_stage_construction_works',
             'rating',
+            'rating_rank'
         ];
 
         $sortColumn    = $request->input('sortColumn');
