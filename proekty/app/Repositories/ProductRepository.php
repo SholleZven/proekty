@@ -76,7 +76,13 @@ final class ProductRepository implements ProductRepositoryInterface
                 ) t
             ),
             max_vals AS (
-                SELECT MAX(quantity_conclusions) AS max_count FROM base
+                SELECT MAX(count_per_inn) AS max_count
+                FROM (
+                    SELECT COUNT(*) AS count_per_inn
+                    FROM products
+                    WHERE inn IS NOT NULL AND inn <> ''
+                    GROUP BY inn
+                ) sub
             )
             SELECT
                 b.*,
