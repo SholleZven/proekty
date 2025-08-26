@@ -88,15 +88,21 @@ final class ProductRepository implements ProductRepositoryInterface
                 b.*,
                 fp.functional_purpose AS most_common_functional_purpose,
                 st.stage_construction_works AS most_common_stage_construction_works,
-                ROUND(
-                    0.8 * (
-                        (b.quantity_positive_conclusion - 2 * b.quantity_negative_conclusion)::numeric
-                        / NULLIF(b.quantity_conclusions, 0)
-                    ) * 100
-                    +
-                    0.2 * (b.quantity_conclusions::numeric / NULLIF(m.max_count, 0)) * 100,
-                    2
-                ) AS rating
+                ROUND((
+                    0.6 * CASE
+                            WHEN b.quantity_positive_conclusion > 0
+                            THEN LN(b.quantity_positive_conclusion::double precision)
+                            ELSE 0
+                        END
+                    + 0.2 * (
+                            (b.quantity_positive_conclusion + 1)::numeric
+                            / (b.quantity_positive_conclusion + b.quantity_negative_conclusion + 2)
+                        )
+                    + 0.2 * (
+                            (b.quantity_positive_conclusion + 1)::numeric
+                            / (b.quantity_negative_conclusion + 1)
+                        )
+                )::numeric, 4) AS rating
             FROM base b
             LEFT JOIN common_fp fp ON fp.inn = b.inn
             LEFT JOIN common_stage st ON st.inn = b.inn
