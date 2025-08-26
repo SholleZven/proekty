@@ -87,7 +87,7 @@
                                     {{ product.inn }}
                                 </RouterLink>
                             </td>
-                            <td>{{ product.rating }}</td>
+                            <td>{{ product.rating_rank }}</td>
                             <td>{{ product.quantity_conclusions }}</td>
                             <td class="positive">{{ product.quantity_positive_conclusion }}</td>
                             <td class="negative">{{ product.quantity_negative_conclusion }}</td>
