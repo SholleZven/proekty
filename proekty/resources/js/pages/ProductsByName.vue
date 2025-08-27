@@ -79,13 +79,13 @@ watch(() => route.params.inn, (newVal) => {
 .large-loading span {
     width: 10px;
     height: 10px;
-    background-color: #6780ee66;
+    background-color: #324598e8;
 }
 
 .back-link {
     display: inline-block;
     margin-top: 2rem;
-    color: #6780ee66;
+    color: #324598e8;
     text-decoration: none;
     font-weight: bold;
     transition: color 0.2s;
