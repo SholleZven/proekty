@@ -73,6 +73,8 @@ h1 {
 .table-wrapper {
     width: 100%;
     overflow-x: auto;
+    overflow-y: auto;
+    max-height: 820px;
 }
 
 .table {
@@ -87,6 +89,14 @@ h1 {
     background: #2e4968;
     color: white;
     border-radius: 12px;
+}
+
+.table thead th {
+    position: sticky;
+    top: 0;
+    background: #2e4968;
+    color: #fff;
+    z-index: 1;
 }
 
 .table th,
