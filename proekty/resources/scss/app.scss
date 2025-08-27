@@ -44,8 +44,8 @@ h1 {
 
 .upload input[type="file"]:focus {
     outline: none;
-    border-color: #6c63ff;
-    box-shadow: 0 0 6px #6c63ff66;
+    border-color: #2e4968;
+    box-shadow: 0 0 6px #1d3959;
 }
 
 .upload .upload-buttons {
@@ -55,7 +55,7 @@ h1 {
 }
 
 .upload button {
-    background: #6c63ff;
+    background: #2e4968;
     color: #fff;
     border: none;
     padding: 0.65rem 1.5rem;
@@ -67,7 +67,7 @@ h1 {
 }
 
 .upload button:hover {
-    background: #574fdb;
+    background: #4576d0ba;
 }
 
 .table-wrapper {
@@ -84,7 +84,7 @@ h1 {
 }
 
 .table thead tr {
-    background: #6c63ff;
+    background: #2e4968;
     color: white;
     border-radius: 12px;
 }
@@ -107,7 +107,7 @@ h1 {
 
 .table th:first-child {
     z-index: 3;
-    background: #6c63ff;
+    background: #2e4968;
     color: white;
 }
 
@@ -122,7 +122,7 @@ h1 {
 }
 
 .table tbody tr:hover {
-    background: #e3e0ff;
+    background: #eaecfc;
 }
 
 .pagination {
@@ -163,12 +163,12 @@ h1 {
 
 .input-wrapper input[type="text"]:focus {
     outline: none;
-    border-color: #6c63ff;
-    box-shadow: 0 0 8px #6c63ff66;
+    border-color: #2e4968;
+    box-shadow: 0 0 8px #1d3959;
 }
 
 button {
-    background: #6c63ff;
+    background: #2e4968;
     color: #fff;
     border: none;
     padding: 0.65rem 1.5rem;
@@ -180,7 +180,7 @@ button {
 }
 
 button:hover {
-    background: #574fdb;
+    background: #4576d0ba;
 }
 
 /* --- Responsive Design --- */

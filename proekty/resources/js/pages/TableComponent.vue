@@ -175,7 +175,6 @@ const uploadFile = async () => {
     }
 }
 
-// Нормализация данных из Pagination (там может прийти paginator { data: [...] } или просто массив)
 const normalizeRows = (payload) => {
     if (payload && Array.isArray(payload.data)) return payload.data
     if (Array.isArray(payload)) return payload
@@ -195,14 +194,14 @@ const computedUrl = computed(() => {
 // Обработчик клика по заголовку
 const onSort = (column) => {
     sortBy(column)
-    reloadKey.value++ // дернуть перерисовку Pagination (если он не реагирует на смену :url)
+    reloadKey.value++
 }
 </script>
 
 <style scoped>
 .custom-file-upload {
     display: inline-block;
-    background-color: #4f46e5;
+    background-color: #2e4968;
     color: white;
     border-radius: 8px;
     padding: 0.8rem 1.5rem;
@@ -212,7 +211,7 @@ const onSort = (column) => {
 }
 
 .custom-file-upload:hover {
-    background-color: #4338ca;
+    background-color: #4576d0ba;
 }
 
 .custom-file-upload input {
@@ -258,7 +257,7 @@ const onSort = (column) => {
 .large-loading span {
     width: 10px;
     height: 10px;
-    background-color: #4f46e5;
+    background-color: #1e20a78f;
 }
 
 th.sortable {
