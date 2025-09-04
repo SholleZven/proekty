@@ -1,8 +1,16 @@
 <template>
     <div class="container">
+
+        <!-- Кнопка авторизации -->
+        <AuthButton :isAuth="isAuth" @login="showLogin = true" @logout="onLoggedOut" />
+
         <h1>Проекты</h1>
-        <!-- Загрузка Excel -->
-        <form @submit.prevent="uploadFile" class="upload">
+
+        <!-- Форма входа (появляется по клику на "Войти") -->
+        <LoginForm v-if="showLogin && !isAuth" @login-success="handleLoginSuccess" @close="showLogin = false" />
+
+        <!-- Загрузка Excel (только для авторизованных) -->
+        <form v-if="isAuth" @submit.prevent="uploadFile" class="upload">
             <label class="custom-file-upload">
                 <input type="file" @change="handleFileUpload" />
                 <div class="span-input-upload">
@@ -104,23 +112,13 @@
         </Pagination>
     </div>
 
-    <ErrorToast
-                    :show="showError"
-                    :message="errorMessage"
-                    @close="showError = false"
-    />
-
-    <SuccessToast
-                    :show="showSuccessful"
-                    :message="successfulMessage"
-                    @close="showSuccessful= false"
-    />
-
+    <ErrorToast :show="showError" :message="errorMessage" @close="showError = false" />
+    <SuccessToast :show="showSuccessful" :message="successfulMessage" @close="showSuccessful = false" />
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import axios from 'axios'
+import { ref, computed, onMounted } from 'vue'
+import http, { getToken, clearToken } from '../http'
 
 import LoadingDots from '../components/LoadingDots.vue'
 import Pagination from '../components/Pagination.vue'
@@ -129,6 +127,8 @@ import SortIcon from '../components/SortIcon.vue'
 import { useSort } from '../composables/useSort'
 import ErrorToast from '../components/Toasts/ErrorToast.vue'
 import SuccessToast from '../components/Toasts/SuccessToast.vue'
+import AuthButton from '../components/AuthButton.vue'
+import LoginForm from '../components/LoginForm.vue'
 
 const file = ref(null)
 const fileName = ref('')
@@ -141,7 +141,44 @@ const errorMessage = ref('')
 const showSuccessful = ref(false)
 const successfulMessage = ref('')
 
+const isAuth = ref(false)
+const showLogin = ref(false)
+
 const { sortColumn, sortDirection, sortBy } = useSort()
+
+onMounted(async () => {
+    // Проверка токена на старте — если валидный, /auth/me вернёт 200
+    const token = getToken()
+    if (!token) {
+        isAuth.value = false
+        return
+    }
+    try {
+        await http.get('/auth/me')
+        isAuth.value = true
+    } catch (e) {
+        // Токен недействителен/просрочен — чистим
+        if (e?.response?.status === 401) {
+            clearToken()
+        }
+        isAuth.value = false
+    }
+})
+
+const onLoggedOut = () => {
+    isAuth.value = false
+    showLogin.value = false
+    successfulMessage.value = 'Вы вышли из системы'
+    showSuccessful.value = true
+}
+
+const handleLoginSuccess = () => {
+    isAuth.value = true
+    showLogin.value = false
+    successfulMessage.value = 'Вы успешно вошли'
+    showSuccessful.value = true
+    reloadKey.value++ // если надо, форс-апдейт списка
+}
 
 const handleSearch = (term) => {
     searchTerm.value = term
@@ -162,13 +199,20 @@ const uploadFile = async () => {
     const formData = new FormData()
     formData.append('file', file.value)
     try {
-        await axios.post('/api/products/upload', formData)
+        // ВАЖНО: через http (интерцептор добавит Authorization)
+        await http.post('/products/upload', formData)
         reloadKey.value++
         successfulMessage.value = 'Файл успешно подгружен'
         showSuccessful.value = true
     } catch (e) {
         console.error('Ошибка загрузки файла', e)
-        errorMessage.value = 'Не удалось загрузить файл'
+        if (e?.response?.status === 401) {
+            errorMessage.value = 'Требуется авторизация. Пожалуйста, войдите.'
+            isAuth.value = false
+            showLogin.value = true
+        } else {
+            errorMessage.value = 'Не удалось загрузить файл'
+        }
         showError.value = true
     } finally {
         loadingUpload.value = false
@@ -264,5 +308,4 @@ th.sortable {
     cursor: pointer;
     user-select: none;
 }
-
 </style>
