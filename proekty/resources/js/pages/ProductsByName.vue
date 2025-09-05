@@ -79,19 +79,19 @@ watch(() => route.params.inn, (newVal) => {
 .large-loading span {
     width: 10px;
     height: 10px;
-    background-color: #4f46e5;
+    background-color: #324598e8;
 }
 
 .back-link {
     display: inline-block;
     margin-top: 2rem;
-    color: #4f46e5;
+    color: #324598e8;
     text-decoration: none;
     font-weight: bold;
     transition: color 0.2s;
 }
 
 .back-link:hover {
-    color: #3730a3;
+    color: #a9a5f566;
 }
 </style>

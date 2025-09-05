@@ -80,7 +80,7 @@ onMounted(fetchData)
 }
 
 button {
-    background: #4f46e5;
+    background: #2e4968;
     color: white;
     border: none;
     padding: 0.6rem 1.4rem;
@@ -96,6 +96,6 @@ button:disabled {
 }
 
 button:hover:enabled {
-    background-color: #4338ca;
+    background-color: #4576d0ba
 }
 </style>
