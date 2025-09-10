@@ -118,8 +118,8 @@ class ProductController extends Controller
 
         Excel::import($importService, $file);
 
-        // Сбросить весь кэш с тегом 'products'
-        Cache::tags(['products'])->flush();
+        // Сбросить весь кэш
+        Cache::flush();
 
         return response()->json([
             'message' => 'Импорт завершён',
