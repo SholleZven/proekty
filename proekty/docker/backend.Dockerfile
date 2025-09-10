@@ -15,6 +15,8 @@ RUN apt-get update && apt-get install -y \
     bash \
     nodejs \
     npm \
+    dos2unix \
+    vim \
     && docker-php-ext-install pdo pdo_pgsql zip bcmath gd opcache mbstring \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN pecl install redis \
@@ -52,6 +54,10 @@ FROM backend AS final
 
 WORKDIR /var/www/html
 
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN dos2unix /usr/local/bin/docker-entrypoint.sh \
+    && chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Копируем Laravel-приложение
 COPY . .
 
@@ -61,5 +67,7 @@ COPY --from=frontend /app/public/build ./public/build
 # Права для storage, cache, vendor и build
 RUN chown -R www-data:www-data storage bootstrap/cache public/build vendor \
     && chmod -R 777 storage bootstrap/cache public/build vendor
+
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 CMD ["php-fpm"]
