@@ -1,10 +1,18 @@
 <template>
     <div class="container">
 
-        <!-- Кнопка авторизации -->
-        <AuthButton :isAuth="isAuth" @login="showLogin = true" @logout="onLoggedOut" />
+        <div class="header-wrap">
+            <a href="/">
+                <img alt="Статус" src="/public/images/logo_vert_blue.png" class="logo" />
+            </a>
 
-        <h1>Статус</h1>
+            <h1>СТАТУС</h1>
+
+            <!-- Кнопка авторизации -->
+            <AuthButton :isAuth="isAuth" @login="showLogin = true" @logout="onLoggedOut" />
+        </div>
+
+        <h2>ПОИСК ПРОЕКТНО-ИЗЫСКАТЕЛЬСКИХ КОМПАНИЙ</h2>
 
         <!-- Форма входа (появляется по клику на "Войти") -->
         <LoginForm v-if="showLogin && !isAuth" @login-success="handleLoginSuccess" @close="showLogin = false" />
@@ -307,5 +315,18 @@ const onSort = (column) => {
 th.sortable {
     cursor: pointer;
     user-select: none;
+}
+
+.logo {
+    width: 12rem;
+    height: auto;
+    /* display: flex;
+    justify-self: center; */
+    margin-bottom: 2rem;
+}
+
+.header-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 </style>
