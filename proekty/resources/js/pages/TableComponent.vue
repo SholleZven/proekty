@@ -4,7 +4,7 @@
         <!-- Кнопка авторизации -->
         <AuthButton :isAuth="isAuth" @login="showLogin = true" @logout="onLoggedOut" />
 
-        <h1>Проекты</h1>
+        <h1>Статус</h1>
 
         <!-- Форма входа (появляется по клику на "Войти") -->
         <LoginForm v-if="showLogin && !isAuth" @login-success="handleLoginSuccess" @close="showLogin = false" />

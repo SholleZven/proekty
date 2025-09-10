@@ -27,9 +27,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: laravel
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: laravel_db
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -37,7 +37,7 @@ services:
 
   # Redis
   redis:
-    image: redis:alpine
+    image: redis:8.2.1
     container_name: redis
     restart: unless-stopped
     ports:
@@ -47,7 +47,7 @@ services:
 
   # Nginx
   nginx:
-    image: nginx:alpine
+    image: nginx:1.29.1
     container_name: nginx
     restart: unless-stopped
     ports:
