@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     vim \
     && docker-php-ext-install pdo pdo_pgsql zip bcmath gd opcache mbstring \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN pecl install redis \
+RUN pecl install redis 6.2.0 \
     && docker-php-ext-enable redis
 
 # Composer
