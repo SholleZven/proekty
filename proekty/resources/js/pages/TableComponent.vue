@@ -320,8 +320,6 @@ th.sortable {
 .logo {
     width: 12rem;
     height: auto;
-    /* display: flex;
-    justify-self: center; */
     margin-bottom: 2rem;
 }
 
