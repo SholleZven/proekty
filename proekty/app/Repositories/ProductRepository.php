@@ -60,21 +60,24 @@ final class ProductRepository implements ProductRepositoryInterface
                 ) t
             ),
             common_stage AS (
-                SELECT DISTINCT ON (inn)
-                    inn, stage_construction_works
+                SELECT
+                    inn,
+                    stage_construction_works,
+                    cnt,
+                    ROW_NUMBER() OVER (PARTITION BY inn ORDER BY cnt DESC) AS rn
                 FROM (
                     SELECT inn, stage_construction_works, COUNT(*) AS cnt
                     FROM products
                     WHERE inn IS NOT NULL AND inn <> ''
                     GROUP BY inn, stage_construction_works
-                    ORDER BY inn, cnt DESC
                 ) t
             ),
             scored_all AS (
                 SELECT
                     b.*,
                     fp.functional_purpose AS most_common_functional_purpose,
-                    st.stage_construction_works AS most_common_stage_construction_works,
+                    st1.stage_construction_works AS most_common_stage_construction_works,
+                    st2.stage_construction_works AS second_common_stage_construction_works,
                     ROUND(
                         (
                             0.6 * COALESCE(LN(NULLIF(b.quantity_positive_conclusion,0)::double precision),0)
@@ -86,7 +89,8 @@ final class ProductRepository implements ProductRepositoryInterface
                     ) AS rating
                 FROM base_all b
                 LEFT JOIN common_fp fp ON fp.inn = b.inn
-                LEFT JOIN common_stage st ON st.inn = b.inn
+                LEFT JOIN common_stage st1 ON st1.inn = b.inn AND st1.rn = 1
+                LEFT JOIN common_stage st2 ON st2.inn = b.inn AND st2.rn = 2
             ),
             ranked_all AS (
                 SELECT

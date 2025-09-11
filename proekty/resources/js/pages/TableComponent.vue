@@ -110,7 +110,7 @@
                             <td>{{ product.average_expertise_date }}</td>
                             <td>{{ product.average_complect_date }}</td>
                             <td>{{ product.most_common_functional_purpose }}</td>
-                            <td>{{ product.most_common_stage_construction_works }}</td>
+                            <td>{{ product.most_common_stage_construction_works + '\n' + (product.second_common_stage_construction_works == null ? '' : product.second_common_stage_construction_works) }}</td>
                         </tr>
                     </tbody>
                 </table>
