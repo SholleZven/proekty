@@ -45,6 +45,7 @@ RUN npm ci
 # Копируем исходники Vue и стили
 COPY resources/ ./resources/
 COPY vite.config.js ./
+COPY ./public/images/ ./public/images/
 
 # Собираем Vue в build
 RUN npm run build
