@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <h2>Записи по ИНН: "{{ inn }}"</h2>
+        <h3>Записи по ИНН: "{{ inn }}"</h3>
 
         <Pagination :url="`/api/products/by-inn/${encodeURIComponent(inn)}`" :watchParams="[inn]"
             v-slot="{ data, loading }">
