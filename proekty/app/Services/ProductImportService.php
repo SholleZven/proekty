@@ -22,7 +22,6 @@ class ProductImportService implements ToCollection
         $filteredRows = $this->filterService->filter($rows);
 
         foreach ($filteredRows as $row) {
-            // $name = trim((string) $row[0]);
             $registrationDate = Carbon::instance(Date::excelToDateTimeObject($row[0]));
             $projectNumber = trim((string) $row[1]);
             $egrzNumber = trim((string) $row[2]);
@@ -41,8 +40,6 @@ class ProductImportService implements ToCollection
             $costAdjusted = $row[15];
             $stageConstructionWorks = trim((string) $row[16]);
 
-            // $projectNumber = $row[2];
-            // $positiveConclusion = $row[1];
             Product::create([
                 'registration_date' => $registrationDate,
                 'project_number' => $projectNumber,
@@ -61,7 +58,6 @@ class ProductImportService implements ToCollection
                 'cost_declared' => is_numeric($costDeclared) ? (float) $costDeclared : null,
                 'cost_adjusted' => is_numeric($costAdjusted) ? (float) $costAdjusted : null,
                 'stage_construction_works' => $stageConstructionWorks
-                // 'positive_conclusion' => is_numeric($positiveConclusion) ? (int) $positiveConclusion : null,
             ]);
         }
     }

@@ -53,6 +53,7 @@ button {
     padding: 0.5rem 1rem;
     border-radius: 6px;
     cursor: pointer;
+    height: 2rem;
 }
 
 button:hover {
