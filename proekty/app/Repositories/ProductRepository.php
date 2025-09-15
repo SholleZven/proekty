@@ -42,8 +42,18 @@ final class ProductRepository implements ProductRepositoryInterface
                     COUNT(*) AS quantity_conclusions,
                     SUM((p.conclusion_result = 'Положительное')::int) AS quantity_positive_conclusion,
                     SUM((p.conclusion_result = 'Отрицательное')::int) AS quantity_negative_conclusion,
-                    CEIL(AVG(p.conclusion_date - p.contract_date)) AS average_expertise_date,
-                    CEIL(AVG(p.contract_date - p.registration_date)) AS average_complect_date
+                    CEIL(AVG(
+                            CASE
+                                WHEN p.contract_date = '1970-01-01' THEN p.conclusion_date - p.registration_date
+                                ELSE p.conclusion_date - p.contract_date
+                            END
+                        )) AS average_expertise_date,
+                    CEIL(AVG(
+                            CASE
+                                WHEN p.contract_date = '1970-01-01' THEN p.start_date - p.registration_date
+                                ELSE p.contract_date - p.registration_date
+                            END
+                        )) AS average_complect_date
                 FROM products p
                 WHERE p.inn IS NOT NULL AND p.inn <> ''
                 GROUP BY p.inn
