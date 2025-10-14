@@ -2,9 +2,11 @@
     <div class="container">
 
         <div class="header-wrap">
-            <a href="/">
-                <img alt="Статус" src="/public/images/logo_vert_blue.png" class="logo" />
-            </a>
+            <div class="logo-container">
+                <a href="/">
+                    <img alt="Статус" src="/public/images/logo_vert_blue.png" class="logo" />
+                </a>
+            </div>
 
             <h1>СТАТУС</h1>
 
@@ -14,10 +16,8 @@
 
         <h2>ПОИСК ПРОЕКТНО-ИЗЫСКАТЕЛЬСКИХ КОМПАНИЙ</h2>
 
-        <!-- Форма входа (появляется по клику на "Войти") -->
         <LoginForm v-if="showLogin && !isAuth" @login-success="handleLoginSuccess" @close="showLogin = false" />
 
-        <!-- Загрузка Excel (только для авторизованных) -->
         <form v-if="isAuth" @submit.prevent="uploadFile" class="upload">
             <label class="custom-file-upload">
                 <input type="file" @change="handleFileUpload" />

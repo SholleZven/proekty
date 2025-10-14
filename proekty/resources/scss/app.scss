@@ -36,12 +36,12 @@ h2 {
 .logo {
     width: 12rem;
     height: auto;
-    margin-bottom: 2rem;
 }
 
 .header-wrap {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+    margin-bottom: 3rem;
 }
 
 .upload {
@@ -218,6 +218,10 @@ button:hover {
     .container {
         padding: 1rem 1.5rem;
         margin: 1rem;
+    }
+
+    .logo {
+        width: 10rem;
     }
 
     .input-wrapper input[type="text"] {
