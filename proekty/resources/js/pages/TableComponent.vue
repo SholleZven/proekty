@@ -316,15 +316,4 @@ th.sortable {
     cursor: pointer;
     user-select: none;
 }
-
-.logo {
-    width: 12rem;
-    height: auto;
-    margin-bottom: 2rem;
-}
-
-.header-wrap {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-}
 </style>
