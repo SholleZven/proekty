@@ -18,8 +18,8 @@
                             <th>Вид услуги</th>
                             <th>Дата выдачи заключения</th>
                             <th>Результат заключения</th>
-                            <th>Заявленная сметная стоимость в текущих ценах, млн. руб.</th>
-                            <th>Откорректированная сметная стоимость в текущих ценах, млн. руб.</th>
+                            <!-- <th>Заявленная сметная стоимость в текущих ценах, млн. руб.</th>
+                            <th>Откорректированная сметная стоимость в текущих ценах, млн. руб.</th> -->
                             <th>Этап строительных работ</th>
                             <th>Cрок экспертизы, календар. дни</th>
                             <th>Cрок комплектности, календар. дни</th>
@@ -33,8 +33,8 @@
                             <td>{{ product.service_type }}</td>
                             <td>{{ product.conclusion_date }}</td>
                             <td>{{ product.conclusion_result }}</td>
-                            <td>{{ product.cost_declared }}</td>
-                            <td>{{ product.cost_adjusted }}</td>
+                            <!-- <td>{{ product.cost_declared }}</td>
+                            <td>{{ product.cost_adjusted }}</td> -->
                             <td>{{ product.stage_construction_works }}</td>
                             <td>{{ product.expertise_date }}</td>
                             <td>{{ product.complect_date }}</td>
