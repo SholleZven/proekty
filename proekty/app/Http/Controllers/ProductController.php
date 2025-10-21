@@ -103,7 +103,7 @@ class ProductController extends Controller
     public function upload(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls',
+            'file' => 'required|file|mimetypes:application/octet-stream,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel',
         ]);
 
         $file = $request->file('file');
