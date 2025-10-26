@@ -19,6 +19,24 @@
 
 <body>
     <div id="app"></div>
+    <footer class="footer">
+        <a href="#"
+            onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; return false;">о
+            программе</a>
+
+        <div style="display: none; margin: 10px 0;">
+            <p>
+                Сервис «Статус» помогает заказчикам найти проектные и изыскательские компании, которые работали с
+                государственной экспертизой Челябинской области через онлайн-платформу (ЕЦПЭ).
+            </p>
+            <p>
+                Важно: Данные о компаниях берутся из их заявлений с 2021 года и могут не совпадать с официальным
+                реестром
+                (ЕГРЗ).
+            </p>
+        </div>
+        <p>© 2025 Госэкспертиза Челябинской обл.</p>
+    </footer>
 </body>
 
 </html>
